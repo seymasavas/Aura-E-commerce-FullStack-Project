@@ -1,13 +1,13 @@
-import productcard1 from '../assets/productcard1.jpg' 
-import productcard2 from '../assets/productcard2.jpg'
-import productcard3 from '../assets/productcard3.jpg'
-import productcard4 from '../assets/productcard4.jpg'
-import productcard5 from '../assets/productcard5.jpg'
-import productcard6 from '../assets/productcard6.jpg'
-import productcard7 from '../assets/productcard7.jpg'
-import productcard8 from '../assets/productcard8.jpg'
+import productcard1 from '../../assets/productcard1.jpg'
+import productcard2 from '../../assets/productcard2.jpg'
+import productcard3 from '../../assets/productcard3.jpg'
+import productcard4 from '../../assets/productcard4.jpg'
+import productcard5 from '../../assets/productcard5.jpg'
+import productcard6 from '../../assets/productcard6.jpg'
+import productcard7 from '../../assets/productcard7.jpg'
+import productcard8 from '../../assets/productcard8.jpg'
 
-function ProductCard() {
+function HomeProductCard() {
 
   const products = [
     { id: 1, title: 'Graphic Design', category: 'English Department', oldPrice: '$16.48', newPrice: '$6.48', image: productcard1 },
@@ -82,4 +82,4 @@ function ProductCard() {
   );
 }
 
-export default ProductCard;
+export default HomeProductCard;

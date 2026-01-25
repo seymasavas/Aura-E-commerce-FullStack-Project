@@ -1,8 +1,9 @@
-import shopcard1 from '../assets/shopcard1.png'
-import shopcard2 from '../assets/shopcard2.png'
-import shopcard3 from '../assets/shopcard3.png'
+import shopcard1 from '../../assets/shopcard1.png'
+import shopcard2 from '../../assets/shopcard2.png'
+import shopcard3 from '../../assets/shopcard3.png'
 
-function ShopCard() {
+
+function HomeShopCard() {
 
 
   return(
@@ -62,4 +63,4 @@ function ShopCard() {
   ) 
 }
 
-export default ShopCard;
+export default HomeShopCard;
