@@ -11,6 +11,7 @@ import productcard9 from '../../assets/productcard9.jpg';
 import productcard10 from '../../assets/productcard10.jpg'; 
 import productcard11 from '../../assets/productcard11.jpg'; 
 import productcard12 from '../../assets/productcard12.jpg';
+import React from 'react';
 
 
 export default function ProductCard() {
@@ -39,22 +40,21 @@ export default function ProductCard() {
           {products.map((product) => (
             <div key={product.id} className="flex flex-col items-center w-full bg-white hover:shadow-lg transition-shadow duration-300 group">
 
-               <div className="w-full h-[427px] lg:h-[300px] overflow-hidden relative">
+                <Link to={`/shop/${product.id}/${product.title}`} className="w-full h-[427px] lg:h-[300px] overflow-hidden relative block">
                   <img 
                     src={product.image} 
                     alt={product.title} 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
                   />
-               </div>
+               </Link>
 
                <div className="flex flex-col items-center gap-[10px] pt-[25px] px-[25px] pb-[35px] w-full">
 
                   <h5 className="font-['Montserrat'] font-bold text-[16px] leading-[24px] text-[#252B42] text-center truncate w-full">
-                    {product.title}
+                     <Link to={`/shop/${product.id}/${product.title}`}>
+                        {product.title}
+                     </Link>
                   </h5>
-                  <Link to={`/shop/${product.category}`} className="font-['Montserrat'] font-bold text-[14px] leading-[24px] text-[#737373] hover:text-[#23A6F0]">
-                    {product.category}
-                  </Link>
                   
                   <div className="flex gap-[5px] py-[5px] px-[3px]">
                     <span className="font-['Montserrat'] font-bold text-[16px] text-[#BDBDBD] line-through">

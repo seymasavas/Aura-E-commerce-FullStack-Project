@@ -1,7 +1,4 @@
 import './App.css'
-import Footer from '/src/layout/Footer.jsx'
-import Header from '/src/layout/Header.jsx'
-import PageContent from '/src/layout/PageContent.jsx'
 import HomePage from '/src/pages/HomePage.jsx'
 import Pricing from '/src/pages/Pricing.jsx'
 import About from '/src/pages/About.jsx'
@@ -14,8 +11,10 @@ import Team from '/src/pages/Team.jsx'
 import {Route, Routes} from 'react-router-dom'
 
 
+
 function App() {
   
+
 
   return (
     <>
@@ -26,7 +25,7 @@ function App() {
               <Route path="/about" element={<About/>}/>
               <Route path="/cart" element={<CartPage/>}/>
               <Route path="/contact" element={<Contact/>}/>
-              <Route path="/productdetail" element={<ProductDetailPage/>}/>
+              <Route path="/shop/:productId/:productNameSlug" element={<ProductDetailPage/>}/>
               <Route path="/productlist" element={<ProductListPage/>}/>
               <Route path="/shop" element={<ShopPage/>} />
               <Route path="/team" element={<Team/>}/>
