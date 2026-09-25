@@ -1,7 +1,7 @@
 import Footer from "../layout/Footer";
 import Header from "../layout/Header";
 import { useForm } from "react-hook-form";
-import { loginUser } from "../store/actions/userActions";
+import { loginUser } from "../store/actions/clientActions";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
@@ -57,8 +57,8 @@ const Login = () => {
               {...register("password", {
                 required: "Password is required",
                 minLength: {
-                  value: 8,
-                  message: "Password must be at least 8 characters",
+                  value: 6,
+                  message: "Password must be at least 6 characters",
                 },
               })}
             />

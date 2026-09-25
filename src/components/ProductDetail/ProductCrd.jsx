@@ -1,64 +1,138 @@
-import productcard1 from '../../assets/productcard1.jpg'
-import productcard2 from '../../assets/productcard2.jpg'
-import productcard3 from '../../assets/productcard3.jpg'
-import productcard4 from '../../assets/productcard4.jpg'
-import productcard5 from '../../assets/productcard5.jpg'
-import productcard6 from '../../assets/productcard6.jpg'
-import productcard7 from '../../assets/productcard7.jpg'
-import productcard8 from '../../assets/productcard8.jpg'
-import { Link } from 'react-router-dom';
+import productcard1 from "../../assets/productcard1.jpg";
+import productcard2 from "../../assets/productcard2.jpg";
+import productcard3 from "../../assets/productcard3.jpg";
+import productcard4 from "../../assets/productcard4.jpg";
+import productcard5 from "../../assets/productcard5.jpg";
+import productcard6 from "../../assets/productcard6.jpg";
+import productcard7 from "../../assets/productcard7.jpg";
+import productcard8 from "../../assets/productcard8.jpg";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 export default function ProductCrd() {
+  // const products = [
+  //   {
+  //     id: 1,
+  //     title: "Graphic Design",
+  //     category: "English Department",
+  //     oldPrice: "$16.48",
+  //     newPrice: "$6.48",
+  //     image: productcard1,
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Graphic Design",
+  //     category: "English Department",
+  //     oldPrice: "$16.48",
+  //     newPrice: "$6.48",
+  //     image: productcard2,
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Graphic Design",
+  //     category: "English Department",
+  //     oldPrice: "$16.48",
+  //     newPrice: "$6.48",
+  //     image: productcard3,
+  //   },
+  //   {
+  //     id: 4,
+  //     title: "Graphic Design",
+  //     category: "English Department",
+  //     oldPrice: "$16.48",
+  //     newPrice: "$6.48",
+  //     image: productcard4,
+  //   },
+  //   {
+  //     id: 5,
+  //     title: "Graphic Design",
+  //     category: "English Department",
+  //     oldPrice: "$16.48",
+  //     newPrice: "$6.48",
+  //     image: productcard5,
+  //   },
+  //   {
+  //     id: 6,
+  //     title: "Graphic Design",
+  //     category: "English Department",
+  //     oldPrice: "$16.48",
+  //     newPrice: "$6.48",
+  //     image: productcard1,
+  //   },
+  //   {
+  //     id: 7,
+  //     title: "Graphic Design",
+  //     category: "English Department",
+  //     oldPrice: "$16.48",
+  //     newPrice: "$6.48",
+  //     image: productcard6,
+  //   },
+  //   {
+  //     id: 8,
+  //     title: "Graphic Design",
+  //     category: "English Department",
+  //     oldPrice: "$16.48",
+  //     newPrice: "$6.48",
+  //     image: productcard7,
+  //   },
+  //   {
+  //     id: 9,
+  //     title: "Graphic Design",
+  //     category: "English Department",
+  //     oldPrice: "$16.48",
+  //     newPrice: "$6.48",
+  //     image: productcard8,
+  //   },
+  //   {
+  //     id: 10,
+  //     title: "Graphic Design",
+  //     category: "English Department",
+  //     oldPrice: "$16.48",
+  //     newPrice: "$6.48",
+  //     image: productcard3,
+  //   },
+  // ];
 
-const products = [
-    { id: 1, title: 'Graphic Design', category: 'English Department', oldPrice: '$16.48', newPrice: '$6.48', image: productcard1 },
-    { id: 2, title: 'Graphic Design', category: 'English Department', oldPrice: '$16.48', newPrice: '$6.48', image: productcard2 },
-    { id: 3, title: 'Graphic Design', category: 'English Department', oldPrice: '$16.48', newPrice: '$6.48', image: productcard3 },
-    { id: 4, title: 'Graphic Design', category: 'English Department', oldPrice: '$16.48', newPrice: '$6.48', image: productcard4 },
-    { id: 5, title: 'Graphic Design', category: 'English Department', oldPrice: '$16.48', newPrice: '$6.48', image: productcard5 },
-    { id: 6, title: 'Graphic Design', category: 'English Department', oldPrice: '$16.48', newPrice: '$6.48', image: productcard1 },
-    { id: 7, title: 'Graphic Design', category: 'English Department', oldPrice: '$16.48', newPrice: '$6.48', image: productcard6 },     
-    { id: 8, title: 'Graphic Design', category: 'English Department', oldPrice: '$16.48', newPrice: '$6.48', image: productcard7 },
-    { id: 9, title: 'Graphic Design', category: 'English Department', oldPrice: '$16.48', newPrice: '$6.48', image: productcard8 },
-    { id: 10, title: 'Graphic Design', category: 'English Department', oldPrice: '$16.48', newPrice: '$6.48', image: productcard3 },
-  ];
+  const products = useSelector((state) => state.product.productList) || [];
+
+  console.log(" the products came from redux store", products);
 
   return (
     <div className="w-full bg-white font-sans">
-      
       <div className="container mx-auto px-4 lg:px-0 lg:max-w-[1124px] py-20 flex flex-col items-center gap-6 lg:gap-6">
-
         <div className="flex flex-col items-start gap-[10px] w-full max-w-[1048px] mx-auto mb-6">
-          <h3 className="font-bold text-2xl leading-8 tracking-[0.1px] text-[#252B42]">BESTSELLER PRODUCTS</h3>
-          <hr className="w-full border-t-2 border-[#ECECEC] mb-2"/>
+          <h3 className="font-bold text-2xl leading-8 tracking-[0.1px] text-[#252B42]">
+            BESTSELLER PRODUCTS
+          </h3>
+          <hr className="w-full border-t-2 border-[#ECECEC] mb-2" />
         </div>
 
-
         <div className="flex flex-wrap justify-center gap-[30px] w-full">
-          {products.map((product, index) => (
-            <div 
-                key={product.id} 
-                className={`flex-col items-center w-full max-w-[295px] lg:max-w-[183px] ${index > 4 ? 'hidden lg:flex' : 'flex'}`}
+          {products?.map((product, index) => (
+            <div
+              key={product.id}
+              className={`flex-col items-center w-full max-w-[295px] lg:max-w-[183px] ${index > 4 ? "hidden lg:flex" : "flex"}`}
             >
-              
-              <Link 
-                to={`/shop/${product.id}/${product.title}`} 
+              <Link
+                to={`/shop/${product.id}/${product.title}`}
                 className="w-full h-[360px] lg:h-[238px] mb-[25px] block"
               >
-                <img 
-                  src={product.image} 
+                <img
+                  src={product.image}
                   alt={product.title}
                   className="w-full h-full object-cover hover:opacity-80 transition-opacity"
                 />
               </Link>
 
               <div className="flex flex-col items-center gap-[10px] pb-[35px]">
-                
                 <h5 className="font-bold text-base leading-6 tracking-[0.1px] text-[#252B42] text-center">
                   {product.title}
                 </h5>
-                
-                <a href="#" className="font-bold text-sm leading-6 tracking-[0.2px] text-[#737373] text-center hover:text-[#23A6F0] transition-colors">
+
+                <a
+                  href="#"
+                  className="font-bold text-sm leading-6 tracking-[0.2px] text-[#737373] text-center hover:text-[#23A6F0] transition-colors"
+                >
                   {product.category}
                 </a>
 
@@ -70,7 +144,6 @@ const products = [
                     {product.newPrice}
                   </span>
                 </div>
-
               </div>
             </div>
           ))}
@@ -79,7 +152,6 @@ const products = [
         <button className="mt-8 lg:mt-4 py-[15px] px-10 bg-white border border-[#23A6F0] rounded-[5px] text-[#23A6F0] font-bold text-sm leading-[22px] tracking-[0.2px] hover:bg-[#23A6F0] hover:text-white transition-all uppercase">
           LOAD MORE PRODUCTS
         </button>
-
       </div>
     </div>
   );

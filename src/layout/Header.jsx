@@ -14,16 +14,15 @@ import {
 import { Link } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
-import { logoutUser } from "../store/actions/userActions";
+import { logoutUser } from "../store/actions/clientActions";
 
 function Header({ isShopPage = false }) {
-  const tamReduxverisi = useSelector((state) => state.user);
+  const tamReduxverisi = useSelector((state) => state.client);
+  const { isAuthenticated, user } = tamReduxverisi;
+  const cartItems = useSelector((state) => state.shoppingCart.cart);
   const dispatch = useDispatch();
 
   console.log("Header Redux Verisi:", tamReduxverisi);
-
-  const { isAuthenticated, user } = tamReduxverisi;
-
   const handleLogout = () => {
     dispatch(logoutUser());
   };
@@ -150,13 +149,18 @@ function Header({ isShopPage = false }) {
                 )}
 
                 <Search className="w-[16px] h-[16px] cursor-pointer" />
-                <div className="flex items-center gap-1 cursor-pointer">
-                  <ShoppingCart className="w-[16px] h-[16px]" />
-                  <span className="text-xs">1</span>
-                </div>
+                <Link
+                  to="/cart"
+                  className="flex items-center gap-1 cursor-pointer"
+                >
+                  <div className="flex items-center gap-1 cursor-pointer">
+                    <ShoppingCart className="w-[16px] h-[16px]" />
+                    <span className="text-xs">{cartItems.length}</span>
+                  </div>
+                </Link>
                 <div className="flex items-center gap-1 cursor-pointer">
                   <Heart className="w-[16px] h-[16px]" />
-                  <span className="text-xs">1</span>
+                  <span className="text-xs">{cartItems.length}</span>
                 </div>
               </div>
 
@@ -164,7 +168,12 @@ function Header({ isShopPage = false }) {
                 {!isShopPage && (
                   <>
                     <Search className="w-[24px] h-[24px]" />
-                    <ShoppingCart className="w-[24px] h-[24px]" />
+                    <Link
+                      to="/cart"
+                      className="flex items-center gap-1 cursor-pointer"
+                    >
+                      <ShoppingCart className="w-[24px] h-[24px]" />
+                    </Link>
                   </>
                 )}
                 <LucideMenu className="w-[24px] cursor-pointer" />
@@ -178,8 +187,6 @@ function Header({ isShopPage = false }) {
               <Link to="/" className="text-[#252B42] font-medium">
                 Home
               </Link>
-              <Link to="/productlist">Product</Link>
-              <Link to="/pricing">Pricing</Link>
               <Link to="/contact">Contact</Link>
             </nav>
 
@@ -202,7 +209,7 @@ function Header({ isShopPage = false }) {
                   <Search className="w-[30px] h-[30px]" />
                   <div className="flex items-center gap-[5px]">
                     <ShoppingCart className="w-[30px] h-[30px]" />
-                    <span className="text-sm">1</span>
+                    <span className="text-sm">{cartItems.length}</span>
                   </div>
                   <div className="flex items-center gap-[5px]">
                     <Heart className="w-[30px] h-[30px]" />
