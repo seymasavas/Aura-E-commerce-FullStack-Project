@@ -15,20 +15,6 @@ import "react-toastify/dist/ReactToastify.css";
 import Login from "/src/pages/Login.jsx";
 
 function App() {
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (token) {
-      const fakeData = {
-        token: token,
-        user: { name: "Şeyma", email: "test@test.com", role_id: 3 },
-      };
-      dispatch({ type: "LOGIN_SUCCESS", payload: fakeData });
-    }
-  }, [dispatch]);
-
   return (
     <>
       <ToastContainer />

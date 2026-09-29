@@ -5,6 +5,7 @@ import { loginUser } from "../store/actions/clientActions";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -16,11 +17,18 @@ const Login = () => {
     formState: { errors, isSubmitting },
   } = useForm({ mode: "onChange" });
 
-  const onSubmit = (data) => {
-    dispatch(loginUser(data));
-    setTimeout(() => {
-      navigate("/");
-    }, 1000);
+  const onSubmit = async (data) => {
+    try {
+      const formData = { email: data.email, password: data.password };
+      await dispatch(loginUser(formData, data.rememberMe));
+      toast.success("Giriş başarılı! Yönlendiriliyorsunuz...");
+
+      setTimeout(() => {
+        navigate("/");
+      }, 1500);
+    } catch (error) {
+      toast.error("Giriş başarısız. Lütfen bilgilerinizi kontrol edin.");
+    }
   };
 
   return (
@@ -65,6 +73,16 @@ const Login = () => {
             {errors.password && (
               <p className="text-red-500 text-sm">{errors.password.message}</p>
             )}
+            <div className="flex items-center gap-2 mt-2">
+              <input
+                type="checkbox"
+                id="rememberMe"
+                {...register("rememberMe")}
+              />
+              <label htmlFor="rememberMe" className="text-sm text-gray-600">
+                Remember Me
+              </label>
+            </div>
             <button
               disabled={isSubmitting}
               className="w-full mt-4 bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition"

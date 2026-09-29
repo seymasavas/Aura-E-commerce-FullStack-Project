@@ -15,17 +15,23 @@ import { Link } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { logoutUser } from "../store/actions/clientActions";
+import md5 from "md5";
 
 function Header({ isShopPage = false }) {
-  const tamReduxverisi = useSelector((state) => state.client);
-  const { isAuthenticated, user } = tamReduxverisi;
+  const user = useSelector((state) => state.client.user);
+  const isUserLoggedIn = user && user.email;
   const cartItems = useSelector((state) => state.shoppingCart.cart);
   const dispatch = useDispatch();
 
-  console.log("Header Redux Verisi:", tamReduxverisi);
   const handleLogout = () => {
     dispatch(logoutUser());
   };
+
+  const gravatarHash = isUserLoggedIn
+    ? md5(user.email.trim().toLowerCase())
+    : "";
+  const gravatarUrl = `https://www.gravatar.com/avatar/${gravatarHash}?s=30&d=mp`;
+
   return (
     <header className="w-full bg-white">
       <div className="hidden lg:flex h-[58px] bg-[#252B42] font-sans items-center justify-between px-[30px]">
@@ -121,8 +127,20 @@ function Header({ isShopPage = false }) {
             <div className="flex items-center">
               {/* Desktop Sağ Taraf */}
               <div className="hidden lg:flex items-center gap-[30px] text-[#23A6F0] font-sans font-[700] text-sm">
-                {isAuthenticated ? (
+                {isUserLoggedIn ? (
                   <div className="flex items-center gap-4">
+                    <Link
+                      to="/"
+                      className="flex items-center gap-[5px] hover:text-blue-600"
+                    >
+                      {/* Yeni eklediğimiz profil resmi */}
+                      <img
+                        src={gravatarUrl}
+                        alt="Profil"
+                        className="w-[30px] h-[30px] rounded-full border border-gray-300"
+                      />
+                      <span>Hoşgeldin, {user?.name}</span>
+                    </Link>
                     <Link
                       to="/"
                       className="flex items-center gap-[5px] hover:text-blue-600"
@@ -193,7 +211,7 @@ function Header({ isShopPage = false }) {
             {/* mobil-shop */}
             {isShopPage && (
               <div className="flex flex-col items-center gap-[20px] text-[#23A6F0] font-sans font-[400] text-[30px]">
-                {isAuthenticated ? (
+                {isUserLoggedIn ? (
                   <Link to="/" className="flex items-center gap-[10px]">
                     <UserIcon className="w-[30px] h-[30px]" />
                     <span>hoşgeldin, {user?.name}</span>
