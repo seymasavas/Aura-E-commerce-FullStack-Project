@@ -13,8 +13,16 @@ import SignUp from "/src/pages/SignUp.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Login from "/src/pages/Login.jsx";
+import { verifyUser } from "./store/actions/clientActions";
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    console.log("App.jsx: useEffect çalıştı, kurye çağrılıyor!");
+    (dispatch(verifyUser()), [dispatch]);
+  });
+
   return (
     <>
       <ToastContainer />

@@ -26,7 +26,11 @@ export const loginUser = (formData) => async (dispatch) => {
 
   try {
     const response = await axiosInstance.post("/login", formData);
-    localStorage.setItem("token", response.data.token);
+
+    if (rememberMe) {
+      localStorage.setItem("token", response.data.token);
+    }
+
     dispatch(setUser(response.data));
     console.log("Giriş Başarılı", response.data);
     return response;
@@ -38,7 +42,35 @@ export const loginUser = (formData) => async (dispatch) => {
 
 export const logoutUser = () => (dispatch) => {
   localStorage.removeItem("token");
+  delete axiosInstance.defaults.headers.common["Authorization"];
   dispatch(setUser({}));
 
   console.log("✅ Çıkış yapıldı, kullanıcı silindi.");
+};
+
+export const verifyUser = () => async (dispatch) => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    return;
+  }
+
+  try {
+    axiosInstance.defaults.headers.common["Authorization"] = token;
+
+    const response = await axiosInstance.get("/verify");
+
+    const newToken = response.data.token;
+    localStorage.setItem("token", newToken);
+    axiosInstance.defaults.headers.common["Authorization"] = newToken;
+
+    dispatch(setUser(response.data));
+
+    console.log("Auto-login başarılı,Backend'den Gelen Veri:", response.data);
+  } catch (error) {
+    console.error("Auto-login hatası", error);
+    localStorage.removeItem("token");
+
+    delete axiosInstance.defaults.headers.common["Authorization"];
+    dispatch(setUser({}));
+  }
 };
