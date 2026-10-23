@@ -51,3 +51,18 @@ export const fetchProducts = () => async (dispatch) => {
     dispatch(setFetchState("FAILED"));
   }
 };
+
+export const fetchCategories = () => async (dispatch) => {
+  dispatch(setFetchState("FETCHING"));
+  try {
+    const response = await axiosInstance.get("/categories");
+
+    dispatch(setCategories(response.data.categories || response.data));
+
+    dispatch(setFetchState("FETCHED"));
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+
+    dispatch(setFetchState("FAILED"));
+  }
+};

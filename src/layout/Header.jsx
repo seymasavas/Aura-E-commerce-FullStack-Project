@@ -32,6 +32,19 @@ function Header({ isShopPage = false }) {
     : "";
   const gravatarUrl = `https://www.gravatar.com/avatar/${gravatarHash}?s=30&d=mp`;
 
+  const categories = useSelector((state) => state.product.categories || []);
+
+  const maleCategories = categories.filter(
+    (category) => category.gender === "e",
+  );
+  const femaleCategories = categories.filter(
+    (category) => category.gender === "k",
+  );
+
+  const top5Categories = [...categories]
+    .sort((a, b) => b.rating - a.rating)
+    .slice(0, 5);
+
   return (
     <header className="w-full bg-white">
       <div className="hidden lg:flex h-[58px] bg-[#252B42] font-sans items-center justify-between px-[30px]">
@@ -83,9 +96,57 @@ function Header({ isShopPage = false }) {
                   <Link to="/" className="hover:text-[#252B42]">
                     Home
                   </Link>
-                  <Link to="/shop" className="hover:text-[#252B42]">
-                    Shop
-                  </Link>
+
+                  {/* YENİ SHOP DROPDOWN MENÜSÜ */}
+                  <div className="group relative flex items-center gap-1 cursor-pointer">
+                    <Link
+                      to="/shop"
+                      className="hover:text-[#252B42] transition-colors"
+                    >
+                      Shop
+                    </Link>
+                    <ChevronDown
+                      size={14}
+                      className="text-[#737373] group-hover:text-[#252B42] transition-colors"
+                    />
+
+                    {/* Açılır Kutu (İki Sütunlu) */}
+                    <div className="absolute top-[120%] left-0 bg-white shadow-lg rounded-md p-6 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-hover:top-full transition-all duration-300 z-50 border border-gray-100 flex flex-row gap-12 min-w-[300px]">
+                      {/* Kadın Kategorileri Sütunu */}
+                      <div className="flex flex-col gap-3">
+                        <h3 className="font-bold text-[#252B42] mb-2 text-base">
+                          Kadın
+                        </h3>
+                        {femaleCategories?.map((category) => (
+                          <Link
+                            key={category.id}
+                            to={`/shop/kadin/${category.title.toLowerCase().replace(/\s+/g, "-")}/${category.id}`}
+                            className="text-[14px] font-medium text-[#737373] hover:text-[#23A6F0]"
+                          >
+                            {category.title}
+                          </Link>
+                        ))}
+                      </div>
+
+                      {/* Erkek Kategorileri Sütunu */}
+                      <div className="flex flex-col gap-3">
+                        <h3 className="font-bold text-[#252B42] mb-2 text-base">
+                          Erkek
+                        </h3>
+                        {maleCategories?.map((category) => (
+                          <Link
+                            key={category.id}
+                            to={`/shop/erkek/${category.title.toLowerCase().replace(/\s+/g, "-")}/${category.id}`}
+                            className="text-[14px] font-medium text-[#737373] hover:text-[#23A6F0]"
+                          >
+                            {category.title}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  {/* YENİ SHOP DROPDOWN BİTİŞ */}
+
                   <Link to="/about" className="hover:text-[#252B42]">
                     About
                   </Link>
@@ -133,7 +194,6 @@ function Header({ isShopPage = false }) {
                       to="/"
                       className="flex items-center gap-[5px] hover:text-blue-600"
                     >
-                      {/* Yeni eklediğimiz profil resmi */}
                       <img
                         src={gravatarUrl}
                         alt="Profil"
@@ -141,14 +201,6 @@ function Header({ isShopPage = false }) {
                       />
                       <span>Hoşgeldin, {user?.name}</span>
                     </Link>
-                    <Link
-                      to="/"
-                      className="flex items-center gap-[5px] hover:text-blue-600"
-                    >
-                      <UserIcon className="w-[16px] h-[16px]" /> Hoşgeldin,{" "}
-                      {user?.name}
-                    </Link>
-
                     <button
                       onClick={handleLogout}
                       className="bg-red-500 text-white px-3 py-1 rounded text-xs hover:bg-red-600 transition-colors"

@@ -14,6 +14,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Login from "/src/pages/Login.jsx";
 import { verifyUser } from "./store/actions/clientActions";
+import { fetchCategories } from "./store/actions/productActions";
 
 function App() {
   const dispatch = useDispatch();
@@ -22,6 +23,10 @@ function App() {
     console.log("App.jsx: useEffect çalıştı, kurye çağrılıyor!");
     (dispatch(verifyUser()), [dispatch]);
   });
+
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
   return (
     <>
