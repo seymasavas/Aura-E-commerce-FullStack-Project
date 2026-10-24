@@ -1,101 +1,12 @@
-import productcard1 from "../../assets/productcard1.jpg";
-import productcard2 from "../../assets/productcard2.jpg";
-import productcard3 from "../../assets/productcard3.jpg";
-import productcard4 from "../../assets/productcard4.jpg";
-import productcard5 from "../../assets/productcard5.jpg";
-import productcard6 from "../../assets/productcard6.jpg";
-import productcard7 from "../../assets/productcard7.jpg";
-import productcard8 from "../../assets/productcard8.jpg";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 export default function ProductCrd() {
-  // const products = [
-  //   {
-  //     id: 1,
-  //     title: "Graphic Design",
-  //     category: "English Department",
-  //     oldPrice: "$16.48",
-  //     newPrice: "$6.48",
-  //     image: productcard1,
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "Graphic Design",
-  //     category: "English Department",
-  //     oldPrice: "$16.48",
-  //     newPrice: "$6.48",
-  //     image: productcard2,
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "Graphic Design",
-  //     category: "English Department",
-  //     oldPrice: "$16.48",
-  //     newPrice: "$6.48",
-  //     image: productcard3,
-  //   },
-  //   {
-  //     id: 4,
-  //     title: "Graphic Design",
-  //     category: "English Department",
-  //     oldPrice: "$16.48",
-  //     newPrice: "$6.48",
-  //     image: productcard4,
-  //   },
-  //   {
-  //     id: 5,
-  //     title: "Graphic Design",
-  //     category: "English Department",
-  //     oldPrice: "$16.48",
-  //     newPrice: "$6.48",
-  //     image: productcard5,
-  //   },
-  //   {
-  //     id: 6,
-  //     title: "Graphic Design",
-  //     category: "English Department",
-  //     oldPrice: "$16.48",
-  //     newPrice: "$6.48",
-  //     image: productcard1,
-  //   },
-  //   {
-  //     id: 7,
-  //     title: "Graphic Design",
-  //     category: "English Department",
-  //     oldPrice: "$16.48",
-  //     newPrice: "$6.48",
-  //     image: productcard6,
-  //   },
-  //   {
-  //     id: 8,
-  //     title: "Graphic Design",
-  //     category: "English Department",
-  //     oldPrice: "$16.48",
-  //     newPrice: "$6.48",
-  //     image: productcard7,
-  //   },
-  //   {
-  //     id: 9,
-  //     title: "Graphic Design",
-  //     category: "English Department",
-  //     oldPrice: "$16.48",
-  //     newPrice: "$6.48",
-  //     image: productcard8,
-  //   },
-  //   {
-  //     id: 10,
-  //     title: "Graphic Design",
-  //     category: "English Department",
-  //     oldPrice: "$16.48",
-  //     newPrice: "$6.48",
-  //     image: productcard3,
-  //   },
-  // ];
+  const { productList: products = [], fetchState } = useSelector(
+    (state) => state.product,
+  );
 
-  const products = useSelector((state) => state.product.productList) || [];
-
-  console.log(" the products came from redux store", products);
+  console.log("The products came from redux store", products);
 
   return (
     <div className="w-full bg-white font-sans">
@@ -107,51 +18,72 @@ export default function ProductCrd() {
           <hr className="w-full border-t-2 border-[#ECECEC] mb-2" />
         </div>
 
-        <div className="flex flex-wrap justify-center gap-[30px] w-full">
-          {products?.map((product, index) => (
-            <div
-              key={product.id}
-              className={`flex-col items-center w-full max-w-[295px] lg:max-w-[183px] ${index > 4 ? "hidden lg:flex" : "flex"}`}
-            >
-              <Link
-                to={`/shop/${product.id}/${product.title}`}
-                className="w-full h-[360px] lg:h-[238px] mb-[25px] block"
-              >
-                <img
-                  src={product.image}
-                  alt={product.title}
-                  className="w-full h-full object-cover hover:opacity-80 transition-opacity"
-                />
-              </Link>
+        {/* 1. DURUM: YÜKLENİYOR (SPINNER) */}
+        {fetchState === "FETCHING" && (
+          <div className="flex flex-col justify-center items-center py-20 gap-4 w-full">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#23A6F0]"></div>
+            <span className="text-[#23A6F0] font-bold">
+              Ürünler Yükleniyor...
+            </span>
+          </div>
+        )}
 
-              <div className="flex flex-col items-center gap-[10px] pb-[35px]">
-                <h5 className="font-bold text-base leading-6 tracking-[0.1px] text-[#252B42] text-center">
-                  {product.title}
-                </h5>
+        {/* 2. DURUM: BAŞARISIZ */}
+        {fetchState === "FAILED" && (
+          <div className="text-red-500 font-bold py-10 text-center w-full">
+            Ürünler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.
+          </div>
+        )}
 
-                <a
-                  href="#"
-                  className="font-bold text-sm leading-6 tracking-[0.2px] text-[#737373] text-center hover:text-[#23A6F0] transition-colors"
+        {/* 3. DURUM: BAŞARILI VE VERİ VAR */}
+        {fetchState === "FETCHED" && (
+          <>
+            <div className="flex flex-wrap justify-center gap-[30px] w-full">
+              {products?.map((product, index) => (
+                <div
+                  key={product.id}
+                  className={`flex-col items-center w-full max-w-[295px] lg:max-w-[183px] ${
+                    index > 4 ? "hidden lg:flex" : "flex"
+                  }`}
                 >
-                  {product.category}
-                </a>
+                  <Link
+                    to={`/shop/${product.category_id}/${product.id}/${product.name.toLowerCase().replace(/\s+/g, "-")}`}
+                    className="w-full h-[360px] lg:h-[238px] mb-[25px] block overflow-hidden rounded-md"
+                  >
+                    <img
+                      src={product.images?.[0]?.url}
+                      alt={product.name}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                    />
+                  </Link>
 
-                <div className="flex gap-[5px] px-[3px] py-[5px]">
-                  <span className="font-bold text-base leading-6 tracking-[0.1px] text-[#BDBDBD]">
-                    {product.oldPrice}
-                  </span>
-                  <span className="font-bold text-base leading-6 tracking-[0.1px] text-[#23856D]">
-                    {product.newPrice}
-                  </span>
+                  <div className="flex flex-col items-center gap-[10px] pb-[35px]">
+                    <h5 className="font-bold text-base leading-6 tracking-[0.1px] text-[#252B42] text-center line-clamp-1">
+                      {product.name}
+                    </h5>
+
+                    <span className="font-bold text-sm leading-6 tracking-[0.2px] text-[#737373] text-center line-clamp-1 px-2">
+                      {product.description}
+                    </span>
+
+                    <div className="flex gap-[5px] px-[3px] py-[5px]">
+                      <span className="font-bold text-base leading-6 tracking-[0.1px] text-[#BDBDBD] line-through">
+                        {(product.price * 1.2).toFixed(2)} ₺
+                      </span>
+                      <span className="font-bold text-base leading-6 tracking-[0.1px] text-[#23856D]">
+                        {product.price} ₺
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        <button className="mt-8 lg:mt-4 py-[15px] px-10 bg-white border border-[#23A6F0] rounded-[5px] text-[#23A6F0] font-bold text-sm leading-[22px] tracking-[0.2px] hover:bg-[#23A6F0] hover:text-white transition-all uppercase">
-          LOAD MORE PRODUCTS
-        </button>
+            <button className="mt-8 lg:mt-4 py-[15px] px-10 bg-white border border-[#23A6F0] rounded-[5px] text-[#23A6F0] font-bold text-sm leading-[22px] tracking-[0.2px] hover:bg-[#23A6F0] hover:text-white transition-all uppercase">
+              LOAD MORE PRODUCTS
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
