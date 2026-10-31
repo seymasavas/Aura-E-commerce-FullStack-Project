@@ -40,29 +40,33 @@ export const setFetchState = (fetchState) => ({
   payload: fetchState,
 });
 
-export const fetchProducts = (categoryId, filter, sort) => async (dispatch) => {
-  dispatch(setFetchState("FETCHING"));
-  try {
-    const queryParams = {};
-    if (categoryId) queryParams.category = categoryId;
-    if (filter) queryParams.filter = filter;
-    if (sort) queryParams.sort = sort;
+export const fetchProducts =
+  (categoryId, filter, sort, total, limit = 25, offset = 0) =>
+  async (dispatch) => {
+    dispatch(setFetchState("FETCHING"));
+    try {
+      const queryParams = {};
+      if (categoryId) queryParams.category = categoryId;
+      if (filter) queryParams.filter = filter;
+      if (sort) queryParams.sort = sort;
+      if (limit) queryParams.limit = limit;
+      if (offset !== undefined) queryParams.offset = offset;
 
-    const response = await axiosInstance.get("/products", {
-      params: queryParams,
-    });
+      const response = await axiosInstance.get("/products", {
+        params: queryParams,
+      });
 
-    dispatch(setProductList(response.data.products || response.data));
+      dispatch(setProductList(response.data.products || response.data));
 
-    dispatch(setTotal(response.data.total || response.data.length));
+      dispatch(setTotal(response.data.total || response.data.length));
 
-    dispatch(setFetchState("FETCHED"));
-  } catch (error) {
-    console.error("Error fetching products:", error);
+      dispatch(setFetchState("FETCHED"));
+    } catch (error) {
+      console.error("Error fetching products:", error);
 
-    dispatch(setFetchState("FAILED"));
-  }
-};
+      dispatch(setFetchState("FAILED"));
+    }
+  };
 
 export const fetchCategories = () => async (dispatch) => {
   dispatch(setFetchState("FETCHING"));
