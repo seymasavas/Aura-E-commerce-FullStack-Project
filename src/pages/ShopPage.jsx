@@ -9,15 +9,18 @@ import ProductCard from "../components/Shop/ProductCard";
 import { fetchProducts } from "../store/actions/productActions.js";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 
 function ShopPage() {
   const dispatch = useDispatch();
+  const { fetchState, productList, filter, sort } = useSelector(
+    (state) => state.product,
+  );
 
+  const { categoryId } = useParams();
   useEffect(() => {
-    dispatch(fetchProducts());
-  }, [dispatch]);
-
-  const { fetchState, productList } = useSelector((state) => state.product);
+    dispatch(fetchProducts(categoryId, filter, sort));
+  }, [dispatch, categoryId, filter, sort]);
 
   return (
     <div>

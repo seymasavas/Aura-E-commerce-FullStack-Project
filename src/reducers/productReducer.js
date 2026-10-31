@@ -5,6 +5,7 @@ const initialState = {
   limit: 25,
   offset: 0,
   filter: "",
+  sort: "",
   fetchState: "NOT_FETCHED",
 };
 
@@ -22,6 +23,8 @@ const productReducer = (state = initialState, action) => {
       return { ...state, offset: action.payload };
     case "SET_FILTER":
       return { ...state, filter: action.payload };
+    case "SET_SORT":
+      return { ...state, sort: action.payload };
     case "SET_FETCH_STATE":
       return { ...state, fetchState: action.payload };
     default:

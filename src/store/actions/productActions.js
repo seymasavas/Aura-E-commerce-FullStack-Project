@@ -30,15 +30,27 @@ export const setFilter = (filter) => ({
   payload: filter,
 });
 
+export const setSort = (sort) => ({
+  type: "SET_SORT",
+  payload: sort,
+});
+
 export const setFetchState = (fetchState) => ({
   type: "SET_FETCH_STATE",
   payload: fetchState,
 });
 
-export const fetchProducts = () => async (dispatch) => {
+export const fetchProducts = (categoryId, filter, sort) => async (dispatch) => {
   dispatch(setFetchState("FETCHING"));
   try {
-    const response = await axiosInstance.get("/products");
+    const queryParams = {};
+    if (categoryId) queryParams.category = categoryId;
+    if (filter) queryParams.filter = filter;
+    if (sort) queryParams.sort = sort;
+
+    const response = await axiosInstance.get("/products", {
+      params: queryParams,
+    });
 
     dispatch(setProductList(response.data.products || response.data));
 

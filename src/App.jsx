@@ -21,8 +21,8 @@ function App() {
 
   useEffect(() => {
     console.log("App.jsx: useEffect çalıştı, kurye çağrılıyor!");
-    (dispatch(verifyUser()), [dispatch]);
-  });
+    dispatch(verifyUser());
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(fetchCategories());
@@ -42,6 +42,10 @@ function App() {
             element={<ProductDetailPage />}
           />
           <Route path="/shop" element={<ShopPage />} />
+          <Route
+            path="/shop/:gender/:categoryName/:categoryId"
+            element={<ShopPage />}
+          />
           <Route path="/team" element={<Team />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
