@@ -7,12 +7,11 @@ import {
   ShoppingCart,
   Eye,
 } from "lucide-react";
-import { useSelector, useDispatch } from "react-redux";
-import { setCart } from "../../store/actions/shoppingCartActions";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../../store/actions/shoppingCartActions";
 
 export default function ProductOverview({ product: currentProduct }) {
   const dispatch = useDispatch();
-  const cart = useSelector((state) => state.shoppingCart.cart);
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
@@ -32,24 +31,6 @@ export default function ProductOverview({ product: currentProduct }) {
     setActiveImageIndex((prev) =>
       prev === 0 ? productImages.length - 1 : prev - 1,
     );
-  };
-
-  const addToCart = (productToAdd) => {
-    const existingProduct = cart.find(
-      (item) => item.product.id === productToAdd.id,
-    );
-
-    if (existingProduct) {
-      const updatedCart = cart.map((item) =>
-        item.product.id === productToAdd.id
-          ? { ...item, count: item.count + 1 }
-          : item,
-      );
-      dispatch(setCart(updatedCart));
-    } else {
-      const updatedCart = [...cart, { count: 1, product: productToAdd }];
-      dispatch(setCart(updatedCart));
-    }
   };
 
   return (
@@ -139,8 +120,9 @@ export default function ProductOverview({ product: currentProduct }) {
               <span className="w-[30px] h-[30px] rounded-full bg-[#E77C40] cursor-pointer hover:scale-110 transition-transform shadow-sm"></span>
               <span className="w-[30px] h-[30px] rounded-full bg-[#252B42] cursor-pointer hover:scale-110 transition-transform shadow-sm"></span>
             </div>
+
             <button
-              onClick={() => addToCart(currentProduct)}
+              onClick={() => dispatch(addToCart(currentProduct))}
               className="w-full mt-3 py-2 bg-[#23A6F0] text-white font-bold rounded hover:bg-blue-600 transition-colors"
             >
               Add to Cart

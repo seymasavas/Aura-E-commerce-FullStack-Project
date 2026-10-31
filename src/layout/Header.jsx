@@ -16,11 +16,11 @@ import { ChevronDown } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { logoutUser } from "../store/actions/clientActions";
 import md5 from "md5";
+import { useState } from "react";
 
 function Header({ isShopPage = false }) {
   const user = useSelector((state) => state.client.user);
   const isUserLoggedIn = user && user.email;
-  const cartItems = useSelector((state) => state.shoppingCart.cart);
   const dispatch = useDispatch();
 
   const handleLogout = () => {
@@ -41,9 +41,10 @@ function Header({ isShopPage = false }) {
     (category) => category.gender === "k",
   );
 
-  const top5Categories = [...categories]
-    .sort((a, b) => b.rating - a.rating)
-    .slice(0, 5);
+  const cart = useSelector((state) => state.shoppingCart.cart);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
+  const totalItemCount = cart.reduce((total, item) => total + item.count, 0);
 
   return (
     <header className="w-full bg-white">
@@ -97,7 +98,6 @@ function Header({ isShopPage = false }) {
                     Home
                   </Link>
 
-                  {/* YENİ SHOP DROPDOWN MENÜSÜ */}
                   <div className="group relative flex items-center gap-1 cursor-pointer">
                     <Link
                       to="/shop"
@@ -110,9 +110,7 @@ function Header({ isShopPage = false }) {
                       className="text-[#737373] group-hover:text-[#252B42] transition-colors"
                     />
 
-                    {/* Açılır Kutu (İki Sütunlu) */}
                     <div className="absolute top-[120%] left-0 bg-white shadow-lg rounded-md p-6 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-hover:top-full transition-all duration-300 z-50 border border-gray-100 flex flex-row gap-12 min-w-[300px]">
-                      {/* Kadın Kategorileri Sütunu */}
                       <div className="flex flex-col gap-3">
                         <h3 className="font-bold text-[#252B42] mb-2 text-base">
                           Kadın
@@ -128,7 +126,6 @@ function Header({ isShopPage = false }) {
                         ))}
                       </div>
 
-                      {/* Erkek Kategorileri Sütunu */}
                       <div className="flex flex-col gap-3">
                         <h3 className="font-bold text-[#252B42] mb-2 text-base">
                           Erkek
@@ -145,7 +142,6 @@ function Header({ isShopPage = false }) {
                       </div>
                     </div>
                   </div>
-                  {/* YENİ SHOP DROPDOWN BİTİŞ */}
 
                   <Link to="/about" className="hover:text-[#252B42]">
                     About
@@ -186,7 +182,6 @@ function Header({ isShopPage = false }) {
             </div>
 
             <div className="flex items-center">
-              {/* Desktop Sağ Taraf */}
               <div className="hidden lg:flex items-center gap-[30px] text-[#23A6F0] font-sans font-[700] text-sm">
                 {isUserLoggedIn ? (
                   <div className="flex items-center gap-4">
@@ -219,18 +214,77 @@ function Header({ isShopPage = false }) {
                 )}
 
                 <Search className="w-[16px] h-[16px] cursor-pointer" />
-                <Link
-                  to="/cart"
-                  className="flex items-center gap-1 cursor-pointer"
+
+                <div
+                  className="relative flex items-center gap-1 cursor-pointer"
+                  onMouseEnter={() => setIsCartOpen(true)}
+                  onMouseLeave={() => setIsCartOpen(false)}
                 >
-                  <div className="flex items-center gap-1 cursor-pointer">
-                    <ShoppingCart className="w-[16px] h-[16px]" />
-                    <span className="text-xs">{cartItems.length}</span>
-                  </div>
-                </Link>
+                  <ShoppingCart className="w-[16px] h-[16px]" />
+                  <span className="text-xs">{totalItemCount}</span>
+
+                  {isCartOpen && (
+                    <div className="absolute top-[100%] right-0 w-[320px] bg-white border border-[#E8E8E8] shadow-lg rounded-b-md z-50 p-4 font-['Montserrat'] cursor-default">
+                      <h4 className="font-bold text-[#252B42] text-[14px] mb-4 pb-2 border-b border-[#ECECEC]">
+                        Sepetim ({totalItemCount} Ürün)
+                      </h4>
+
+                      {cart.length === 0 ? (
+                        <p className="text-center text-[#737373] text-[14px] py-4">
+                          Sepetiniz şu an boş.
+                        </p>
+                      ) : (
+                        <div className="flex flex-col gap-4 max-h-[300px] overflow-y-auto">
+                          {cart.map((item, index) => (
+                            <div
+                              key={index}
+                              className="flex gap-4 items-center border-b border-[#ECECEC] pb-4 last:border-b-0 last:pb-0"
+                            >
+                              <div className="w-[60px] h-[80px] border border-[#E8E8E8] rounded overflow-hidden flex-shrink-0">
+                                <img
+                                  src={
+                                    item.product.images?.[0]?.url ||
+                                    item.product.image
+                                  }
+                                  alt={item.product.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                              <div className="flex flex-col flex-grow">
+                                <h5 className="font-bold text-[#252B42] text-[12px] line-clamp-2 leading-snug mb-1">
+                                  {item.product.name}
+                                </h5>
+                                <p className="text-[#737373] text-[11px] mb-2">
+                                  Adet: {item.count}
+                                </p>
+                                <span className="font-bold text-[#E77C40] text-[14px]">
+                                  $
+                                  {(item.product.price * item.count).toFixed(2)}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="flex gap-2 mt-4 pt-4 border-t border-[#ECECEC]">
+                        <Link
+                          to="/cart"
+                          className="flex-1 py-2 text-center bg-white text-[#252B42] border border-[#E8E8E8] font-bold text-[12px] rounded hover:bg-gray-50 transition-colors"
+                        >
+                          Sepete Git
+                        </Link>
+                        <button className="flex-1 py-2 bg-[#E77C40] text-white font-bold text-[12px] rounded hover:bg-[#d46d36] transition-colors">
+                          Siparişi Tamamla
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <div className="flex items-center gap-1 cursor-pointer">
                   <Heart className="w-[16px] h-[16px]" />
-                  <span className="text-xs">{cartItems.length}</span>
+                  <span className="text-xs">1</span>
                 </div>
               </div>
 
@@ -243,6 +297,7 @@ function Header({ isShopPage = false }) {
                       className="flex items-center gap-1 cursor-pointer"
                     >
                       <ShoppingCart className="w-[24px] h-[24px]" />
+                      <span className="text-xs">{totalItemCount}</span>
                     </Link>
                   </>
                 )}
@@ -251,7 +306,6 @@ function Header({ isShopPage = false }) {
             </div>
           </div>
 
-          {/* mobil menü */}
           <div className="lg:hidden flex flex-col items-center justify-center py-8 gap-8">
             <nav className="flex flex-col items-center gap-[30px] font-sans font-[400] text-[30px] text-[#737373]">
               <Link to="/" className="text-[#252B42] font-medium">
@@ -260,7 +314,6 @@ function Header({ isShopPage = false }) {
               <Link to="/contact">Contact</Link>
             </nav>
 
-            {/* mobil-shop */}
             {isShopPage && (
               <div className="flex flex-col items-center gap-[20px] text-[#23A6F0] font-sans font-[400] text-[30px]">
                 {isUserLoggedIn ? (
@@ -278,8 +331,13 @@ function Header({ isShopPage = false }) {
                 <div className="flex flex-col gap-[20px] items-center">
                   <Search className="w-[30px] h-[30px]" />
                   <div className="flex items-center gap-[5px]">
-                    <ShoppingCart className="w-[30px] h-[30px]" />
-                    <span className="text-sm">{cartItems.length}</span>
+                    <Link
+                      to="/cart"
+                      className="flex items-center gap-1 cursor-pointer"
+                    >
+                      <ShoppingCart size={24} />
+                      <span className="text-lg">{totalItemCount}</span>
+                    </Link>
                   </div>
                   <div className="flex items-center gap-[5px]">
                     <Heart className="w-[30px] h-[30px]" />

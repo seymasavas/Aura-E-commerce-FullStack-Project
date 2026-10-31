@@ -12,3 +12,8 @@ export const setAddress = (address) => ({
   type: "SET_ADDRESS",
   payload: address,
 });
+
+export const addToCart = (product) => ({
+  type: "ADD_TO_CART",
+  payload: product,
+});
