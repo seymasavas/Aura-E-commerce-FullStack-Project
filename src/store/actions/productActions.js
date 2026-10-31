@@ -82,3 +82,25 @@ export const fetchCategories = () => async (dispatch) => {
     dispatch(setFetchState("FAILED"));
   }
 };
+
+export const setCurrentProduct = (product) => ({
+  type: "SET_CURRENT_PRODUCT",
+  payload: product,
+});
+
+export const setProductDetailFetchState = (fetchState) => ({
+  type: "SET_PRODUCT_DETAIL_FETCH_STATE",
+  payload: fetchState,
+});
+
+export const fetchProductDetail = (productId) => async (dispatch) => {
+  dispatch(setProductDetailFetchState("FETCHING"));
+  try {
+    const response = await axiosInstance.get(`/products/${productId}`);
+    dispatch(setCurrentProduct(response.data));
+    dispatch(setProductDetailFetchState("FETCHED"));
+  } catch (error) {
+    console.error("Error fetching product detail:", error);
+    dispatch(setProductDetailFetchState("FAILED"));
+  }
+};

@@ -1,47 +1,12 @@
 import { ChevronRight } from "lucide-react";
-import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
-// import productcard1 from '../../assets/productcard1.jpg';
-// import productcard2 from '../../assets/productcard2.jpg';
-// import productcard3 from '../../assets/productcard3.jpg';
-// import productcard4 from '../../assets/productcard4.jpg';
-// import productcard5 from '../../assets/productcard5.jpg';
-// import productcard6 from '../../assets/productcard6.jpg';
-// import productcard7 from '../../assets/productcard7.jpg';
-// import productcard8 from '../../assets/productcard8.jpg';
-// import productcard9 from '../../assets/productcard9.jpg';
-// import productcard10 from '../../assets/productcard10.jpg';
-// import productcard11 from '../../assets/productcard11.jpg';
-// import productcard12 from '../../assets/productcard12.jpg';
 
-export default function ProductDescription() {
-  const { productId } = useParams();
-
-  const productList = useSelector((state) => state.product.productList) || [];
-
-  const currentProduct = productList.find(
-    (product) => product.id === Number(productId),
-  );
-  // const imageLookup = {
-  //     "1": productcard1,
-  //     "2": productcard2,
-  //     "3": productcard3,
-  //     "4": productcard4,
-  //     "5": productcard5,
-  //     "6": productcard6,
-  //     "7": productcard7,
-  //     "8": productcard8,
-  //     "9": productcard9,
-  //     "10": productcard10,
-  //     "11": productcard11,
-  //     "12": productcard12
-  // };
-
+export default function ProductDescription({ product: currentProduct }) {
   if (!currentProduct) {
     return null;
   }
 
-  const selectedImage = currentProduct.image?.[0]?.url || currentProduct.image;
+  const selectedImage = currentProduct.images?.[0]?.url || currentProduct.image;
+
   return (
     <div className="w-full bg-white pb-12">
       <div className="container mx-auto px-4">
@@ -78,7 +43,6 @@ export default function ProductDescription() {
             </h3>
 
             <div className="font-['Montserrat'] font-[400] text-[14px] leading-[20px] text-[#737373] flex flex-col gap-[20px]">
-              <p>{currentProduct.description}</p>
               <p>{currentProduct.description}</p>
               <p>{currentProduct.description}</p>
               <p>{currentProduct.description}</p>

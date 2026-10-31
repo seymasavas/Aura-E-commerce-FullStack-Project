@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useState } from "react";
 import {
   Star,
   ChevronLeft,
@@ -8,67 +7,16 @@ import {
   ShoppingCart,
   Eye,
 } from "lucide-react";
-
-// import productcard1 from "../../assets/productcard1.jpg";
-// import productcard2 from "../../assets/productcard2.jpg";
-// import productcard3 from "../../assets/productcard3.jpg";
-// import productcard4 from "../../assets/productcard4.jpg";
-// import productcard5 from "../../assets/productcard5.jpg";
-// import productcard6 from "../../assets/productcard6.jpg";
-// import productcard7 from "../../assets/productcard7.jpg";
-// import productcard8 from "../../assets/productcard8.jpg";
-// import productcard9 from "../../assets/productcard9.jpg";
-// import productcard10 from "../../assets/productcard10.jpg";
-// import productcard11 from "../../assets/productcard11.jpg";
-// import productcard12 from "../../assets/productcard12.jpg";
 import { useSelector, useDispatch } from "react-redux";
 import { setCart } from "../../store/actions/shoppingCartActions";
-import { fetchProducts } from "../../store/actions/productActions.js";
 
-export default function ProductOverview() {
-  const params = useParams();
-  const productId = params.productId || params.id;
+export default function ProductOverview({ product: currentProduct }) {
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.shoppingCart.cart);
-  const productList = useSelector((state) => state.product.productList) || [];
-
-  // const imageLookup = {
-  //   1: productcard1,
-  //   2: productcard2,
-  //   3: productcard3,
-  //   4: productcard4,
-  //   5: productcard5,
-  //   6: productcard6,
-  //   7: productcard7,
-  //   8: productcard8,
-  //   9: productcard9,
-  //   10: productcard10,
-  //   11: productcard11,
-  //   12: productcard12,
-  // };
-  console.log("1. URL'den Gelen Parametreler:", params);
-  console.log("2. Redux'taki Ürün Listesi:", productList);
-
-  const currentProduct = productList.find((product) => product.id == productId);
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
-  console.log("3. Eşleşen Ürün Bulundu mu?:", currentProduct);
-
-  useEffect(() => {
-    if (productList.length === 0) {
-      dispatch(fetchProducts());
-    }
-    setActiveImageIndex(0);
-  }, [productId, dispatch, productList.length]);
-
-  if (!currentProduct) {
-    return (
-      <div className="py-20 text-center font-bold text-xl">
-        Loading Product...
-      </div>
-    );
-  }
+  if (!currentProduct) return null;
 
   const productImages = currentProduct.images || [
     { url: currentProduct.image },
@@ -112,7 +60,7 @@ export default function ProductOverview() {
           <span className="text-[#BDBDBD]">{">"}</span>
           <span className="text-[#BDBDBD]">Shop</span>
           <span className="text-[#BDBDBD]">{">"}</span>
-          <span className="text-[#BDBDBD]">Product {productId}</span>
+          <span className="text-[#BDBDBD]">Product {currentProduct.id}</span>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-[30px] justify-center max-w-[1050px] mx-auto">
@@ -141,7 +89,7 @@ export default function ProductOverview() {
             <div className="flex gap-[15px] overflow-x-auto pb-2">
               {productImages.map((img, index) => (
                 <div
-                  key={img.id}
+                  key={img.index || index}
                   onClick={() => setActiveImageIndex(index)}
                   className={`flex-shrink-0 w-[100px] h-[75px] cursor-pointer overflow-hidden rounded-[5px] ${activeImageIndex === index ? "opacity-100 ring-2 ring-gray-400" : "opacity-50"}`}
                 >
@@ -178,7 +126,7 @@ export default function ProductOverview() {
                 Availability :
               </span>
               <span className="font-['Montserrat'] font-[700] text-[14px] text-[#23A6F0]">
-                In Stock
+                {currentProduct.stock > 0 ? "In Stock" : "Out of Stock"}
               </span>
             </div>
             <p className="font-['Montserrat'] font-[400] text-[14px] leading-[20px] text-[#858585] mb-[26px]">
@@ -197,31 +145,6 @@ export default function ProductOverview() {
             >
               Add to Cart
             </button>
-            {/*
-            <div className="flex items-center gap-[10px]">
-              <button className="bg-[#23A6F0] text-white font-['Montserrat'] font-[700] text-[14px] px-[20px] py-[10px] rounded-[5px] hover:bg-blue-600 transition-colors h-[44px]">
-                Select Options
-              </button>
-              <button className="w-[40px] h-[40px] flex items-center justify-center bg-white border border-[#E8E8E8] rounded-full hover:bg-gray-100 transition-colors group">
-                <Heart
-                  size={20}
-                  className="text-[#252B42] group-hover:text-red-500 transition-colors"
-                />
-              </button>
-              <button className="w-[40px] h-[40px] flex items-center justify-center bg-white border border-[#E8E8E8] rounded-full hover:bg-gray-100 transition-colors group">
-                <ShoppingCart
-                  size={20}
-                  className="text-[#252B42] group-hover:text-[#23A6F0] transition-colors"
-                />
-              </button>
-              <button className="w-[40px] h-[40px] flex items-center justify-center bg-white border border-[#E8E8E8] rounded-full hover:bg-gray-100 transition-colors group">
-                <Eye
-                  size={20}
-                  className="text-[#252B42] group-hover:text-[#23A6F0] transition-colors"
-                />
-              </button>
-            </div>
-            */}
           </div>
         </div>
       </div>

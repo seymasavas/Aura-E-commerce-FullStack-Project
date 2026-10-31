@@ -7,6 +7,8 @@ const initialState = {
   filter: "",
   sort: "",
   fetchState: "NOT_FETCHED",
+  currentProduct: {},
+  productDetailFetchState: "NOT_FETCHED",
 };
 
 const productReducer = (state = initialState, action) => {
@@ -27,6 +29,10 @@ const productReducer = (state = initialState, action) => {
       return { ...state, sort: action.payload };
     case "SET_FETCH_STATE":
       return { ...state, fetchState: action.payload };
+    case "SET_CURRENT_PRODUCT":
+      return { ...state, currentProduct: action.payload };
+    case "SET_PRODUCT_DETAIL_FETCH_STATE":
+      return { ...state, productDetailFetchState: action.payload };
     default:
       return state;
   }
