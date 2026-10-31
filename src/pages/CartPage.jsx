@@ -1,44 +1,43 @@
 import Header from "../layout/Header.jsx";
 import Footer from "../layout/Footer.jsx";
 import { useSelector, useDispatch } from "react-redux";
-import { ShoppingCart, Trash, Minus, Plus } from "lucide-react";
+import { ShoppingCart, Trash, Minus, Plus, Check } from "lucide-react";
 import { Link } from "react-router-dom";
-import { setCart } from "../store/actions/shoppingCartActions";
+import {
+  removeFromCart,
+  updateItemCount,
+  toggleItemCheck,
+} from "../store/actions/shoppingCartActions";
 
 function CartPage() {
   const cartItems = useSelector((state) => state.shoppingCart.cart);
   const dispatch = useDispatch();
 
   const handleRemoveItem = (productId) => {
-    const updatedCart = cartItems.filter(
-      (item) => item.product.id !== productId,
-    );
-
-    dispatch(setCart(updatedCart));
+    dispatch(removeFromCart(productId));
   };
 
-  const handleIncrease = (productId) => {
-    const updatedCart = cartItems.map((item) =>
-      item.product.id === productId ? { ...item, count: item.count + 1 } : item,
-    );
-    dispatch(setCart(updatedCart));
+  const handleIncrease = (productId, currentCount) => {
+    dispatch(updateItemCount(productId, currentCount + 1));
   };
 
-  const handleDecrease = (productId) => {
-    const updatedCart = cartItems.map((item) =>
-      item.product.id === productId && item.count > 1
-        ? { ...item, count: item.count - 1 }
-        : item,
-    );
-    dispatch(setCart(updatedCart));
+  const handleDecrease = (productId, currentCount) => {
+    if (currentCount > 1) {
+      dispatch(updateItemCount(productId, currentCount - 1));
+    }
   };
 
-  const subtotal = cartItems.reduce(
-    (total, item) => total + item.product.price * item.count,
-    0,
-  );
+  const handleToggleCheck = (productId) => {
+    dispatch(toggleItemCheck(productId));
+  };
 
-  const deliveryPrice = cartItems.length === 0 ? 0 : subtotal > 1500 ? 0 : 30; // Set delivery price to $30 if there are items in the cart
+  const subtotal = cartItems
+    .filter((item) => item.checked)
+    .reduce((total, item) => total + item.product.price * item.count, 0);
+
+  const hasCheckedItems = cartItems.some((item) => item.checked);
+  const deliveryPrice = !hasCheckedItems ? 0 : subtotal > 1500 ? 0 : 30;
+
   return (
     <>
       <Header />
@@ -68,25 +67,53 @@ function CartPage() {
             {cartItems.map((item, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between border-b border-gray-200 py-6"
+                className={`flex items-center justify-between border-b border-gray-200 py-6 transition-opacity ${
+                  !item.checked ? "opacity-50 bg-gray-50/50" : ""
+                }`}
               >
-                <div className="flex flex-col">
-                  <h2 className="text-lg font-semibold text-[#252B42]">
-                    {item.product.name || "Product Name"}
-                  </h2>
-                  <p className="text-[#23A6F0] font-bold mt-1">
-                    $
-                    {item.product.price
-                      ? item.product.price.toFixed(2)
-                      : "0.00"}
-                  </p>
+                {/* Sol Taraf: Checkbox, Görsel ve Ürün Bilgisi */}
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={() => handleToggleCheck(item.product.id)}
+                    className={`w-6 h-6 rounded border flex items-center justify-center transition-colors ${
+                      item.checked
+                        ? "bg-[#23A6F0] border-[#23A6F0] text-white"
+                        : "border-gray-300 text-transparent hover:border-[#23A6F0]"
+                    }`}
+                  >
+                    <Check size={16} />
+                  </button>
+
+                  <div className="w-16 h-20 border rounded overflow-hidden flex-shrink-0 bg-white">
+                    <img
+                      src={item.product.images?.[0]?.url || item.product.image}
+                      alt={item.product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+
+                  <div className="flex flex-col">
+                    <h2 className="text-lg font-semibold text-[#252B42]">
+                      {item.product.name || "Product Name"}
+                    </h2>
+                    <p className="text-[#23A6F0] font-bold mt-1">
+                      $
+                      {item.product.price
+                        ? item.product.price.toFixed(2)
+                        : "0.00"}
+                    </p>
+                  </div>
                 </div>
 
+                {/* Sağ Taraf: Miktar (Adet) ve Silme Butonları */}
                 <div className="flex items-center gap-6">
                   <div className="flex items-center gap-1 border rounded-md p-1">
                     <button
-                      className="px-2 py-1 text-gray-500 hover:bg-gray-100 rounded"
-                      onClick={() => handleDecrease(item.product.id)}
+                      className="px-2 py-1 text-gray-500 hover:bg-gray-100 rounded disabled:opacity-50"
+                      onClick={() =>
+                        handleDecrease(item.product.id, item.count)
+                      }
+                      disabled={item.count <= 1}
                     >
                       <Minus size={16} />
                     </button>
@@ -95,7 +122,9 @@ function CartPage() {
                     </span>
                     <button
                       className="px-2 py-1 text-gray-500 hover:bg-gray-100 rounded"
-                      onClick={() => handleIncrease(item.product.id)}
+                      onClick={() =>
+                        handleIncrease(item.product.id, item.count)
+                      }
                     >
                       <Plus size={16} />
                     </button>
@@ -112,6 +141,7 @@ function CartPage() {
             ))}
           </div>
 
+          {/* Sipariş Özeti (Sağ Taraf) */}
           <div className="w-full lg:w-1/3">
             <div className="border rounded-lg p-6 shadow-sm bg-gray-50 sticky top-10">
               <h2 className="text-xl font-bold mb-6 border-b pb-4 text-[#252B42]">
@@ -119,7 +149,7 @@ function CartPage() {
               </h2>
 
               <div className="flex justify-between mb-4 text-[#737373] font-semibold">
-                <h3>Subtotal</h3>
+                <h3>Subtotal (Selected)</h3>
                 <span>${subtotal.toFixed(2)}</span>
               </div>
 
@@ -146,6 +176,9 @@ function CartPage() {
               <button className="w-full bg-[#23A6F0] text-white font-bold py-4 px-4 rounded-md hover:bg-blue-600 transition-colors">
                 Proceed to Payment
               </button>
+              <p className="text-[11px] text-gray-500 text-center mt-3">
+                *Only checked items are included in the total.
+              </p>
             </div>
           </div>
         </div>
