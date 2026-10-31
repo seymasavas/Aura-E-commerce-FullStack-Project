@@ -31,12 +31,20 @@ function CartPage() {
     dispatch(toggleItemCheck(productId));
   };
 
-  const subtotal = cartItems
+  const productsSubtotal = cartItems
     .filter((item) => item.checked)
     .reduce((total, item) => total + item.product.price * item.count, 0);
 
   const hasCheckedItems = cartItems.some((item) => item.checked);
-  const deliveryPrice = !hasCheckedItems ? 0 : subtotal > 1500 ? 0 : 30;
+  const baseShipping = !hasCheckedItems
+    ? 0
+    : productsSubtotal > 1500
+      ? 0
+      : 29.99;
+
+  const shippingDiscount = baseShipping > 0 ? baseShipping : 0;
+
+  const grandTotal = productsSubtotal + baseShipping - shippingDiscount;
 
   return (
     <>
@@ -58,27 +66,27 @@ function CartPage() {
           </Link>
         </div>
       ) : (
-        <div className="flex flex-col lg:flex-row gap-8 w-full max-w-7xl mx-auto py-12 px-4 min-h-[calc(100vh-200px)]">
+        <div className="flex flex-col lg:flex-row gap-8 w-full max-w-7xl mx-auto py-12 px-4 min-h-[calc(100vh-200px)] font-['Montserrat']">
           <div className="w-full lg:w-2/3">
-            <h1 className="text-2xl font-bold mb-6 border-b pb-4">
-              Your Cart Items ({cartItems.length})
+            <h1 className="text-2xl font-bold mb-6 border-b pb-4 text-[#252B42]">
+              Sepetim ({cartItems.reduce((acc, item) => acc + item.count, 0)}{" "}
+              Ürün)
             </h1>
 
             {cartItems.map((item, index) => (
               <div
                 key={index}
-                className={`flex items-center justify-between border-b border-gray-200 py-6 transition-opacity ${
+                className={`flex items-center justify-between border border-gray-200 rounded-lg p-4 mb-4 bg-white shadow-sm transition-opacity ${
                   !item.checked ? "opacity-50 bg-gray-50/50" : ""
                 }`}
               >
-                {/* Sol Taraf: Checkbox, Görsel ve Ürün Bilgisi */}
                 <div className="flex items-center gap-4">
                   <button
                     onClick={() => handleToggleCheck(item.product.id)}
                     className={`w-6 h-6 rounded border flex items-center justify-center transition-colors ${
                       item.checked
-                        ? "bg-[#23A6F0] border-[#23A6F0] text-white"
-                        : "border-gray-300 text-transparent hover:border-[#23A6F0]"
+                        ? "bg-[#E77C40] border-[#E77C40] text-white"
+                        : "border-gray-300 text-transparent hover:border-[#E77C40]"
                     }`}
                   >
                     <Check size={16} />
@@ -93,19 +101,15 @@ function CartPage() {
                   </div>
 
                   <div className="flex flex-col">
-                    <h2 className="text-lg font-semibold text-[#252B42]">
+                    <h2 className="text-sm font-bold text-[#252B42] line-clamp-2 max-w-[250px]">
                       {item.product.name || "Product Name"}
                     </h2>
-                    <p className="text-[#23A6F0] font-bold mt-1">
-                      $
-                      {item.product.price
-                        ? item.product.price.toFixed(2)
-                        : "0.00"}
-                    </p>
+                    <span className="text-xs text-gray-500 mt-1">
+                      Beden: Standart
+                    </span>
                   </div>
                 </div>
 
-                {/* Sağ Taraf: Miktar (Adet) ve Silme Butonları */}
                 <div className="flex items-center gap-6">
                   <div className="flex items-center gap-1 border rounded-md p-1">
                     <button
@@ -115,9 +119,9 @@ function CartPage() {
                       }
                       disabled={item.count <= 1}
                     >
-                      <Minus size={16} />
+                      <Minus size={14} />
                     </button>
-                    <span className="px-4 py-1 font-semibold text-[#252B42]">
+                    <span className="px-3 py-1 font-semibold text-[#252B42] text-sm">
                       {item.count}
                     </span>
                     <button
@@ -126,59 +130,76 @@ function CartPage() {
                         handleIncrease(item.product.id, item.count)
                       }
                     >
-                      <Plus size={16} />
+                      <Plus size={14} />
                     </button>
                   </div>
 
+                  <span className="font-bold text-[#23A6F0] text-base min-w-[80px] text-right">
+                    ${(item.product.price * item.count).toFixed(2)}
+                  </span>
+
                   <button
                     onClick={() => handleRemoveItem(item.product.id)}
-                    className="text-red-500 hover:text-red-700 transition-colors p-2"
+                    className="text-gray-400 hover:text-red-500 transition-colors p-2"
                   >
-                    <Trash size={20} />
+                    <Trash size={18} />
                   </button>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Sipariş Özeti (Sağ Taraf) */}
           <div className="w-full lg:w-1/3">
-            <div className="border rounded-lg p-6 shadow-sm bg-gray-50 sticky top-10">
-              <h2 className="text-xl font-bold mb-6 border-b pb-4 text-[#252B42]">
-                Order Overview
+            <div className="border border-gray-200 rounded-lg p-6 shadow-sm bg-white sticky top-10">
+              <button className="w-full bg-[#23A6F0] text-white font-bold py-3 px-4 rounded-md hover:bg-[#d46d36] transition-colors mb-6 text-sm">
+                Sepeti Onayla &gt;
+              </button>
+
+              <h2 className="text-lg font-bold mb-4 text-[#252B42]">
+                Sipariş Özeti
               </h2>
 
-              <div className="flex justify-between mb-4 text-[#737373] font-semibold">
-                <h3>Subtotal (Selected)</h3>
-                <span>${subtotal.toFixed(2)}</span>
-              </div>
-
-              <div className="flex justify-between mb-6 text-[#737373] font-semibold">
-                <h3>Delivery Price</h3>
-                <span
-                  className={
-                    deliveryPrice === 0 ? "text-green-600" : "text-[#252B42]"
-                  }
-                >
-                  {deliveryPrice === 0
-                    ? "Free"
-                    : `$${deliveryPrice.toFixed(2)}`}
+              <div className="flex justify-between mb-3 text-sm text-[#737373]">
+                <span>Ürünün Toplamı</span>
+                <span className="font-semibold text-[#252B42]">
+                  ${productsSubtotal.toFixed(2)}
                 </span>
               </div>
 
-              <div className="flex justify-between mb-8 border-t pt-6">
-                <h3 className="text-xl font-bold text-[#252B42]">Total</h3>
-                <span className="text-xl font-bold text-[#23A6F0]">
-                  ${(subtotal + deliveryPrice).toFixed(2)}{" "}
+              <div className="flex justify-between mb-3 text-sm text-[#737373]">
+                <span>Kargo Toplam</span>
+                <span className="font-semibold text-[#252B42]">
+                  ${baseShipping.toFixed(2)}
                 </span>
               </div>
 
-              <button className="w-full bg-[#23A6F0] text-white font-bold py-4 px-4 rounded-md hover:bg-blue-600 transition-colors">
-                Proceed to Payment
+              {shippingDiscount > 0 && (
+                <div className="flex justify-between mb-4 text-xs text-green-600 bg-green-50 p-2 rounded">
+                  <span>Kargo Bedava (Satıcı Karşılar)</span>
+                  <span className="font-semibold">
+                    -${shippingDiscount.toFixed(2)}
+                  </span>
+                </div>
+              )}
+
+              <div className="flex justify-between mb-6 border-t pt-4 text-base font-bold text-[#252B42]">
+                <span>Toplam</span>
+                <span className="text-[#23A6F0] text-xl">
+                  ${grandTotal.toFixed(2)}
+                </span>
+              </div>
+
+              <div className="mb-6">
+                <input
+                  type="text"
+                  placeholder="+ İNDİRİM KODU GİR"
+                  className="w-full border border-gray-300 rounded p-2 text-xs text-center uppercase tracking-wider text-gray-500 focus:outline-none focus:border-[#E77C40]"
+                />
+              </div>
+
+              <button className="w-full bg-[#23A6F0] text-white font-bold py-3 px-4 rounded-md hover:bg-[#d46d36] transition-colors text-sm">
+                Sepeti Onayla &gt;
               </button>
-              <p className="text-[11px] text-gray-500 text-center mt-3">
-                *Only checked items are included in the total.
-              </p>
             </div>
           </div>
         </div>
