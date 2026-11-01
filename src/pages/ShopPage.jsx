@@ -22,11 +22,9 @@ function ShopPage() {
     dispatch(fetchProducts(categoryId, filter, sort, limit, offset));
   }, [dispatch, categoryId, filter, sort, limit, offset]);
 
-  // Sayfalama Matematiği
   const totalPages = Math.ceil(total / limit) || 1;
   const currentPage = offset / limit + 1;
 
-  // YENİ: Sadece 5 sayfa numarası gösterecek "Pencere" algoritması
   let startPage = Math.max(1, currentPage - 2);
   let endPage = Math.min(totalPages, startPage + 4);
 
@@ -83,7 +81,6 @@ function ShopPage() {
         </div>
       )}
 
-      {/* BAŞARILI DURUM - ÜRÜN LİSTESİ */}
       {fetchState === "FETCHED" && (
         <div className="container mx-auto px-4 py-10">
           <div className="flex flex-wrap justify-center gap-[30px] w-full">
@@ -94,12 +91,9 @@ function ShopPage() {
         </div>
       )}
 
-      {/* DİNAMİK SAYFALAMA */}
       {totalPages > 1 && (
         <div className="flex justify-center mt-12 mb-8 w-full px-4">
-          {/* overflow-x-auto ekleyerek mobilde taşmaları engelledik */}
           <div className="shadow-md rounded-[6px] border border-[#BDBDBD] bg-white overflow-hidden flex font-bold font-['Montserrat'] max-w-full overflow-x-auto">
-            {/* First (İlk Sayfa) Butonu */}
             <button
               disabled={currentPage === 1}
               onClick={() => handlePageChange(1)}
@@ -108,7 +102,6 @@ function ShopPage() {
               First
             </button>
 
-            {/* Prev (Önceki Sayfa) Butonu EKLENDİ */}
             <button
               disabled={currentPage === 1}
               onClick={() => handlePageChange(currentPage - 1)}
@@ -117,7 +110,6 @@ function ShopPage() {
               Prev
             </button>
 
-            {/* Sadece hesaplanan 5 sayfayı basar */}
             {visiblePages.map((page) => (
               <button
                 key={page}
@@ -132,7 +124,6 @@ function ShopPage() {
               </button>
             ))}
 
-            {/* Next (Sonraki) Butonu */}
             <button
               disabled={currentPage === totalPages}
               onClick={() => handlePageChange(currentPage + 1)}
@@ -141,7 +132,6 @@ function ShopPage() {
               Next
             </button>
 
-            {/* Last (Son Sayfa) Butonu EKLENDİ */}
             <button
               disabled={currentPage === totalPages}
               onClick={() => handlePageChange(totalPages)}
@@ -153,7 +143,6 @@ function ShopPage() {
         </div>
       )}
 
-      {/* HATA DURUMU */}
       {fetchState === "FAILED" && (
         <div className="text-center text-red-500 py-10 font-bold">
           Ürünler yüklenirken bir hata oluştu.

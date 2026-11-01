@@ -2,7 +2,7 @@ import Header from "../layout/Header.jsx";
 import Footer from "../layout/Footer.jsx";
 import { useSelector, useDispatch } from "react-redux";
 import { ShoppingCart, Trash, Minus, Plus, Check } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   removeFromCart,
   updateItemCount,
@@ -12,6 +12,7 @@ import {
 function CartPage() {
   const cartItems = useSelector((state) => state.shoppingCart.cart);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleRemoveItem = (productId) => {
     dispatch(removeFromCart(productId));
@@ -151,7 +152,11 @@ function CartPage() {
 
           <div className="w-full lg:w-1/3">
             <div className="border border-gray-200 rounded-lg p-6 shadow-sm bg-white sticky top-10">
-              <button className="w-full bg-[#23A6F0] text-white font-bold py-3 px-4 rounded-md hover:bg-[#d46d36] transition-colors mb-6 text-sm">
+              {/* 3. Üst Sepeti Onayla Butonu */}
+              <button
+                onClick={() => navigate("/order")}
+                className="w-full bg-[#23A6F0] text-white font-bold py-3 px-4 rounded-md hover:bg-blue-600 transition-colors mb-6 text-sm"
+              >
                 Sepeti Onayla &gt;
               </button>
 
@@ -197,7 +202,11 @@ function CartPage() {
                 />
               </div>
 
-              <button className="w-full bg-[#23A6F0] text-white font-bold py-3 px-4 rounded-md hover:bg-[#d46d36] transition-colors text-sm">
+              {/* 4. Alt Sepeti Onayla Butonu */}
+              <button
+                onClick={() => navigate("/order")}
+                className="w-full bg-[#23A6F0] text-white font-bold py-3 px-4 rounded-md hover:bg-blue-600 transition-colors text-sm"
+              >
                 Sepeti Onayla &gt;
               </button>
             </div>

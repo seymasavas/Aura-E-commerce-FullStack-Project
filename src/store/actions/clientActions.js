@@ -113,3 +113,42 @@ export const deleteAddress = (addressId) => async (dispatch) => {
     throw error;
   }
 };
+
+export const fetchCards = () => async (dispatch) => {
+  try {
+    const response = await axiosInstance.get("/user/card");
+    dispatch({ type: "SET_CARD_LIST", payload: response.data });
+  } catch (error) {
+    console.error("Kartlar yüklenemedi:", error);
+  }
+};
+
+export const addCard = (cardData) => async (dispatch) => {
+  try {
+    await axiosInstance.post("/user/card", cardData);
+    dispatch(fetchCards());
+  } catch (error) {
+    console.error("Kart eklenemedi:", error.response?.data);
+    throw error;
+  }
+};
+
+export const updateCard = (cardData) => async (dispatch) => {
+  try {
+    await axiosInstance.put("/user/card", cardData);
+    dispatch(fetchCards());
+  } catch (error) {
+    console.error("Kart güncellenemedi:", error.response?.data);
+    throw error;
+  }
+};
+
+export const deleteCard = (cardId) => async (dispatch) => {
+  try {
+    await axiosInstance.delete(`/user/card/${cardId}`);
+    dispatch(fetchCards());
+  } catch (error) {
+    console.error("Kart silinemedi:", error.response?.data);
+    throw error;
+  }
+};

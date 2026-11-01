@@ -5,6 +5,7 @@ const initialState = {
   roles: [],
   addressList: [],
   language: "tr",
+  cardList: [],
 };
 
 const clientReducer = (state = initialState, action) => {
@@ -19,6 +20,8 @@ const clientReducer = (state = initialState, action) => {
       return { ...state, roles: action.payload };
     case "SET_ADDRESS_LIST":
       return { ...state, addressList: action.payload };
+    case "SET_CARD_LIST":
+      return { ...state, cardList: action.payload };
     default:
       return state;
   }
