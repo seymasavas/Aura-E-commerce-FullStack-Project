@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { Plus, Edit2, Trash2, Check, CreditCard } from "lucide-react";
+import { Plus, Edit2, Trash2 } from "lucide-react";
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
 import {
@@ -12,8 +12,8 @@ import {
   deleteAddress,
   fetchCards,
   addCard,
-  updateCard,
   deleteCard,
+  createOrder,
 } from "../store/actions/clientActions";
 import { toast } from "react-toastify";
 
@@ -23,14 +23,18 @@ export default function CreateOrderPage() {
 
   const addressList = useSelector((state) => state.client.addressList) || [];
   const cardList = useSelector((state) => state.client.cardList) || [];
+  const cartItems = useSelector((state) => state.shoppingCart?.cart) || [];
 
+  // Sekme yönetimi: 1 -> Adres, 2 -> Ödeme
   const [activeStep, setActiveStep] = useState(1);
 
+  // Adres state'leri
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
   const [selectedShippingAddress, setSelectedShippingAddress] = useState(null);
   const [sameAsShipping, setSameAsShipping] = useState(true);
 
+  // Kart state'leri
   const [showCardForm, setShowCardForm] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
   const [is3DSecure, setIs3DSecure] = useState(false);
@@ -47,6 +51,15 @@ export default function CreateOrderPage() {
     reset: resetCard,
   } = useForm();
 
+  // Dinamik Fiyat Hesaplamaları
+  const productsSubtotal = cartItems
+    .filter((item) => item.checked)
+    .reduce((total, item) => total + item.product.price * item.count, 0);
+
+  const baseShipping =
+    productsSubtotal > 1500 || productsSubtotal === 0 ? 0 : 29.99;
+  const grandTotal = productsSubtotal + baseShipping;
+
   useEffect(() => {
     dispatch(fetchAddresses());
     dispatch(fetchCards());
@@ -61,6 +74,7 @@ export default function CreateOrderPage() {
     }
   }, [addressList, cardList]);
 
+  // Adres Form İşlemleri
   const onSubmitAddress = async (data) => {
     try {
       if (editingAddress) {
@@ -84,6 +98,7 @@ export default function CreateOrderPage() {
     }
   };
 
+  // Kart Form İşlemleri
   const onSubmitCard = async (data) => {
     try {
       const cardPayload = {
@@ -108,11 +123,44 @@ export default function CreateOrderPage() {
     }
   };
 
+  // Siparişi Tamamlama (Ödeme Yap) İşlemi
+  const handleCompleteOrder = async () => {
+    try {
+      const activeCard =
+        cardList.find((c) => c.id === selectedCard) || cardList[0];
+
+      const orderPayload = {
+        address_id: selectedShippingAddress,
+        order_date: new Date().toISOString().slice(0, 19),
+        card_no: Number(activeCard?.card_no || 1234123412341234),
+        card_name: activeCard?.name_on_card || "Ali Baş",
+        card_expire_month: Number(activeCard?.expire_month || 12),
+        card_expire_year: Number(activeCard?.expire_year || 2025),
+        card_ccv: 321,
+        price: grandTotal, // Dinamik sepet toplam tutarı
+        products: cartItems
+          .filter((item) => item.checked)
+          .map((item) => ({
+            product_id: item.product.id,
+            count: item.count,
+            detail: "Standart",
+          })),
+      };
+
+      await dispatch(createOrder(orderPayload));
+      toast.success("🎉 Tebrikler! Siparişiniz başarıyla oluşturuldu.");
+      navigate("/");
+    } catch (error) {
+      toast.error("Sipariş oluşturulurken bir hata oluştu.");
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-[#FAFAFA] font-['Montserrat']">
       <Header />
 
       <main className="flex-grow container mx-auto px-4 py-8 max-w-[1200px]">
+        {/* Üst Sekmeler */}
         <div className="flex border-b border-[#ECECEC] mb-8 bg-white rounded-t-lg shadow-sm cursor-pointer">
           <div
             onClick={() => setActiveStep(1)}
@@ -150,8 +198,10 @@ export default function CreateOrderPage() {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
+          {/* SOL TARAF: Adres veya Ödeme İçeriği */}
           <div className="w-full lg:w-3/4 flex flex-col gap-6">
             {activeStep === 1 ? (
+              // --- 1. ADIM: ADRES YÖNETİMİ ---
               <div className="flex flex-col gap-6">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xl font-bold text-[#252B42]">
@@ -294,6 +344,7 @@ export default function CreateOrderPage() {
                 </div>
               </div>
             ) : (
+              // --- 2. ADIM: ÖDEME SEÇENEKLERİ (KART YÖNETİMİ) ---
               <div className="flex flex-col gap-6 bg-white p-6 rounded-lg border border-[#ECECEC] shadow-sm font-['Montserrat']">
                 <div className="flex justify-between items-center border-b pb-4">
                   <h3 className="text-xl font-bold text-[#252B42]">
@@ -311,6 +362,7 @@ export default function CreateOrderPage() {
                 </div>
 
                 {showCardForm ? (
+                  /* Yeni Kart Ekleme Formu */
                   <form
                     onSubmit={handleCardSubmit(onSubmitCard)}
                     className="flex flex-col gap-4"
@@ -321,7 +373,7 @@ export default function CreateOrderPage() {
                       </label>
                       <input
                         type="text"
-                        placeholder="1234 5678 9012 3456"
+                        placeholder="1234567890123456"
                         maxLength={16}
                         className="w-full border border-gray-300 p-2.5 rounded text-sm focus:border-[#E77C40] focus:outline-none"
                         {...regCard("card_no", { required: true })}
@@ -410,6 +462,7 @@ export default function CreateOrderPage() {
                     </button>
                   </form>
                 ) : (
+                  /* Kayıtlı Kartlar Listesi */
                   <div className="flex flex-col gap-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {cardList.map((card) => (
@@ -437,7 +490,7 @@ export default function CreateOrderPage() {
                             </button>
                           </div>
                           <p className="text-sm font-mono text-gray-700 tracking-wider mb-2">
-                            **** **** **** {card.card_no.slice(-4)}
+                            **** **** **** {card.card_no.toString().slice(-4)}
                           </p>
                           <div className="flex justify-between text-xs text-gray-500">
                             <span>
@@ -448,6 +501,7 @@ export default function CreateOrderPage() {
                       ))}
                     </div>
 
+                    {/* Taksit Seçenekleri Alanı */}
                     <div className="mt-6 border-t pt-4">
                       <h4 className="font-bold text-md text-[#252B42] mb-3">
                         Taksit Seçenekleri
@@ -468,7 +522,7 @@ export default function CreateOrderPage() {
                             Tek Çekim
                           </label>
                           <span className="font-bold text-[#E77C40]">
-                            $8,448.99
+                            ${grandTotal.toFixed(2)}
                           </span>
                         </div>
                       </div>
@@ -479,6 +533,7 @@ export default function CreateOrderPage() {
             )}
           </div>
 
+          {/* SAĞ TARAF: Sipariş Özeti ve İlerleme Butonu */}
           <div className="w-full lg:w-1/4">
             <div className="bg-white rounded-lg shadow-sm border border-[#ECECEC] p-6 sticky top-[100px]">
               <button
@@ -490,7 +545,7 @@ export default function CreateOrderPage() {
                     }
                     setActiveStep(2);
                   } else {
-                    toast.success("Sipariş başarıyla tamamlandı! (Mock)");
+                    handleCompleteOrder();
                   }
                 }}
                 className="w-full bg-[#E77C40] text-white font-bold py-3 px-4 rounded-md hover:bg-[#d46d36] transition-colors mb-6 text-sm"
@@ -503,15 +558,21 @@ export default function CreateOrderPage() {
               </h3>
               <div className="flex justify-between mb-3 text-sm text-[#737373]">
                 <span>Ürünün Toplamı</span>
-                <span className="font-semibold text-[#252B42]">$8,448.99</span>
+                <span className="font-semibold text-[#252B42]">
+                  ${productsSubtotal.toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between mb-3 text-sm text-[#737373]">
                 <span>Kargo Toplam</span>
-                <span className="font-semibold text-[#252B42]">$29.99</span>
+                <span className="font-semibold text-[#252B42]">
+                  ${baseShipping.toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between mb-6 border-t pt-4 text-base font-bold text-[#252B42]">
                 <span>Toplam</span>
-                <span className="text-[#E77C40] text-xl">$8,448.99</span>
+                <span className="text-[#E77C40] text-xl">
+                  ${grandTotal.toFixed(2)}
+                </span>
               </div>
             </div>
           </div>

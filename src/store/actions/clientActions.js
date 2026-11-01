@@ -21,14 +21,16 @@ export const fetchRoles = () => async (dispatch, getState) => {
   }
 };
 
-export const loginUser = (formData) => async (dispatch) => {
+export const loginUser = (formData, rememberMe) => async (dispatch) => {
   dispatch({ type: "LOGIN_START", isLoading: true });
 
   try {
     const response = await axiosInstance.post("/login", formData);
 
-    if (rememberMe) {
+    if (rememberMe || response.data.token) {
       localStorage.setItem("token", response.data.token);
+      axiosInstance.defaults.headers.common["Authorization"] =
+        response.data.token;
     }
 
     dispatch(setUser(response.data));
@@ -65,7 +67,7 @@ export const verifyUser = () => async (dispatch) => {
 
     dispatch(setUser(response.data));
 
-    console.log("Auto-login başarılı,Backend'den Gelen Veri:", response.data);
+    console.log("Auto-login başarılı, Backend'den Gelen Veri:", response.data);
   } catch (error) {
     console.error("Auto-login hatası", error);
     localStorage.removeItem("token");
@@ -149,6 +151,19 @@ export const deleteCard = (cardId) => async (dispatch) => {
     dispatch(fetchCards());
   } catch (error) {
     console.error("Kart silinemedi:", error.response?.data);
+    throw error;
+  }
+};
+
+export const createOrder = (orderData) => async (dispatch) => {
+  try {
+    const response = await axiosInstance.post("/order", orderData);
+
+    dispatch({ type: "CLEAR_CART" });
+
+    return response.data;
+  } catch (error) {
+    console.error("Sipariş oluşturulamadı:", error.response?.data);
     throw error;
   }
 };

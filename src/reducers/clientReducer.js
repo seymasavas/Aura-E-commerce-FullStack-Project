@@ -22,6 +22,8 @@ const clientReducer = (state = initialState, action) => {
       return { ...state, addressList: action.payload };
     case "SET_CARD_LIST":
       return { ...state, cardList: action.payload };
+    case "CLEAR_CART":
+      return { ...state, clearCart: action.payload };
     default:
       return state;
   }

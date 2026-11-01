@@ -2,6 +2,7 @@ const initialState = {
   cart: [],
   payment: {},
   address: {},
+  clearCart: [],
 };
 
 const shoppingCartReducer = (state = initialState, action) => {
@@ -67,8 +68,8 @@ const shoppingCartReducer = (state = initialState, action) => {
     case "SET_PAYMENT":
       return { ...state, payment: action.payload };
 
-    case "SET_ADDRESS":
-      return { ...state, address: action.payload };
+    case "CLEAR_CART":
+      return { ...state, cart: [] };
 
     default:
       return state;
