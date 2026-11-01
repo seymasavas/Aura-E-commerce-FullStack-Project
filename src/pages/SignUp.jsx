@@ -58,8 +58,6 @@ const SignUp = () => {
   }, [roles, setValue]);
 
   const selectedRoles = watch("role_id");
-  console.log("Selected role ID:", selectedRoles);
-
   return (
     <>
       <Header />

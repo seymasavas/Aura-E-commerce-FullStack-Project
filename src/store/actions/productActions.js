@@ -41,7 +41,7 @@ export const setFetchState = (fetchState) => ({
 });
 
 export const fetchProducts =
-  (categoryId, filter, sort, total, limit = 25, offset = 0) =>
+  (categoryId, filter, sort, limit = 25, offset = 0) =>
   async (dispatch) => {
     dispatch(setFetchState("FETCHING"));
     try {

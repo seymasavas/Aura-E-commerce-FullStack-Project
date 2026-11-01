@@ -43,9 +43,7 @@ function CartPage() {
       ? 0
       : 29.99;
 
-  const shippingDiscount = baseShipping > 0 ? baseShipping : 0;
-
-  const grandTotal = productsSubtotal + baseShipping - shippingDiscount;
+  const grandTotal = productsSubtotal + baseShipping;
 
   return (
     <>
@@ -177,15 +175,6 @@ function CartPage() {
                   ${baseShipping.toFixed(2)}
                 </span>
               </div>
-
-              {shippingDiscount > 0 && (
-                <div className="flex justify-between mb-4 text-xs text-green-600 bg-green-50 p-2 rounded">
-                  <span>Kargo Bedava (Satıcı Karşılar)</span>
-                  <span className="font-semibold">
-                    -${shippingDiscount.toFixed(2)}
-                  </span>
-                </div>
-              )}
 
               <div className="flex justify-between mb-6 border-t pt-4 text-base font-bold text-[#252B42]">
                 <span>Toplam</span>

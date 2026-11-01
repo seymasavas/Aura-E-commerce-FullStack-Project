@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 
 const ProtectedRoute = ({ children }) => {
   const user = useSelector((state) => state.client.user);
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
   const isLogged = token && user && user.email;
 

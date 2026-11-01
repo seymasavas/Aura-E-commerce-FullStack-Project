@@ -1,16 +1,101 @@
-# React + Vite
+# Aura E-Commerce
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aura is a responsive e-commerce frontend built with React. It includes product browsing, customer accounts, a shopping cart, checkout flows, and order history. The project uses a remote training API for product and customer data.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Browse products by category, filter and sort the catalog, and move between product pages.
+- View product details and related products.
+- Add products to the cart, change quantities, remove items, and select which items to order.
+- Create an account, sign in, and keep a session for the current tab or remember it across browser sessions.
+- Manage saved delivery addresses and payment cards through the API.
+- Submit an order and view previous orders.
+- Access checkout and order history only while signed in.
+- Responsive pages for the home, shop, about, contact, team, account, cart, and checkout experiences.
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React 19 and Vite
+- React Router for client-side routing
+- Redux and Redux Thunk for shared state and asynchronous actions
+- Axios for API requests
+- Tailwind CSS 4 for styling
+- React Hook Form for form handling
+- Lucide React for icons
+- React Toastify for notifications
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Requirements
+
+- Node.js
+- npm
+
+### Install dependencies
+
+```bash
+npm install
+```
+
+### Start the development server
+
+```bash
+npm run dev
+```
+
+Vite prints the local URL in the terminal after the server starts.
+
+### Available scripts
+
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the Vite development server. |
+| `npm run build` | Create a production build in `dist/`. |
+| `npm run preview` | Preview the production build locally. |
+| `npm run lint` | Run ESLint across the project. |
+
+## Application Routes
+
+| Route | Page |
+| --- | --- |
+| `/` | Home |
+| `/shop` | Product catalog |
+| `/shop/:gender/:categoryName/:categoryId` | Catalog filtered by category |
+| `/shop/:gender/:categoryName/:categoryId/:productNameSlug/:productId` | Product details |
+| `/cart` | Shopping cart |
+| `/order` | Checkout (sign-in required) |
+| `/previous-orders` | Order history (sign-in required) |
+| `/about` | About |
+| `/contact` | Contact |
+| `/team` | Team |
+| `/login` | Sign in |
+| `/signup` | Create an account |
+
+## Project Structure
+
+```text
+src/
+  api/          Axios API client
+  assets/       Images and other static assets
+  components/   Shared and page-specific UI components
+  layout/       Header, footer, and page layout components
+  pages/        Route-level pages
+  reducers/     Redux state reducers
+  store/        Redux store and asynchronous actions
+```
+
+## API
+
+The API client is configured in `src/api/axiosInstance.js` and currently uses:
+
+```text
+https://workintech-fe-ecommerce.onrender.com
+```
+
+The frontend expects the remote service to provide product, category, authentication, address, card, and order endpoints. Some actions, such as placing an order, depend on the API's response and availability.
+
+## Notes
+
+- The shopping cart is currently held in Redux memory and is cleared when the page is reloaded.
+- Checkout submits card fields to the configured training API. This project does not include a production payment gateway, and its checkout flow should not be used for real payments.
+- There is no automated test script configured in `package.json` yet.

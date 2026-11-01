@@ -6,8 +6,6 @@ export default function ProductCrd() {
     (state) => state.product,
   );
 
-  console.log("The products came from redux store", products);
-
   return (
     <div className="w-full bg-white font-sans">
       <div className="container mx-auto px-4 lg:px-0 lg:max-w-[1124px] py-20 flex flex-col items-center gap-6 lg:gap-6">
@@ -18,7 +16,6 @@ export default function ProductCrd() {
           <hr className="w-full border-t-2 border-[#ECECEC] mb-2" />
         </div>
 
-        {/* 1. DURUM: YÜKLENİYOR (SPINNER) */}
         {fetchState === "FETCHING" && (
           <div className="flex flex-col justify-center items-center py-20 gap-4 w-full">
             <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#23A6F0]"></div>
@@ -28,14 +25,12 @@ export default function ProductCrd() {
           </div>
         )}
 
-        {/* 2. DURUM: BAŞARISIZ */}
         {fetchState === "FAILED" && (
           <div className="text-red-500 font-bold py-10 text-center w-full">
             Ürünler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.
           </div>
         )}
 
-        {/* 3. DURUM: BAŞARILI VE VERİ VAR */}
         {fetchState === "FETCHED" && (
           <>
             <div className="flex flex-wrap justify-center gap-[30px] w-full">

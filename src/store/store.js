@@ -10,8 +10,6 @@ import productReducer from "../reducers/productReducer.js";
 import shoppingCartReducer from "../reducers/shoppingCartReducer.js";
 import logger from "redux-logger";
 
-console.log("TEST 1: Reducer geldi mi?", clientReducer);
-
 const rootReducer = combineReducers({
   client: clientReducer,
   product: productReducer,
@@ -19,6 +17,5 @@ const rootReducer = combineReducers({
 });
 
 const store = createStore(rootReducer, applyMiddleware(thunk, logger));
-console.log("TEST 2: Store kuruldu mu?", store);
 
 export default store;

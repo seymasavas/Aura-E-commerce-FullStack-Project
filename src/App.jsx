@@ -17,12 +17,12 @@ import { verifyUser } from "./store/actions/clientActions";
 import { fetchCategories } from "./store/actions/productActions";
 import CreateOrderPage from "./pages/CreateOrderPage.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import PreviousOrdersPage from "./pages/PreviousOrdersPage.jsx";
 
 function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log("App.jsx: useEffect çalıştı, kurye çağrılıyor!");
     dispatch(verifyUser());
   }, [dispatch]);
 
@@ -53,6 +53,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <CreateOrderPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/previous-orders"
+            element={
+              <ProtectedRoute>
+                <PreviousOrdersPage />
               </ProtectedRoute>
             }
           />

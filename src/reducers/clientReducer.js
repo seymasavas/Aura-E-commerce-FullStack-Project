@@ -6,6 +6,7 @@ const initialState = {
   addressList: [],
   language: "tr",
   cardList: [],
+  orderList: [],
 };
 
 const clientReducer = (state = initialState, action) => {
@@ -24,6 +25,8 @@ const clientReducer = (state = initialState, action) => {
       return { ...state, cardList: action.payload };
     case "CLEAR_CART":
       return { ...state, clearCart: action.payload };
+    case "SET_ORDER_LIST":
+      return { ...state, orderList: action.payload };
     default:
       return state;
   }

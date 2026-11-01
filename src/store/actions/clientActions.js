@@ -27,14 +27,16 @@ export const loginUser = (formData, rememberMe) => async (dispatch) => {
   try {
     const response = await axiosInstance.post("/login", formData);
 
-    if (rememberMe || response.data.token) {
+    if (rememberMe) {
       localStorage.setItem("token", response.data.token);
-      axiosInstance.defaults.headers.common["Authorization"] =
-        response.data.token;
+      sessionStorage.removeItem("token");
+    } else {
+      sessionStorage.setItem("token", response.data.token);
+      localStorage.removeItem("token");
     }
+    axiosInstance.defaults.headers.common["Authorization"] = response.data.token;
 
     dispatch(setUser(response.data));
-    console.log("Giriş Başarılı", response.data);
     return response;
   } catch (error) {
     console.error("Giriş hatası: ", error.response?.data);
@@ -44,14 +46,14 @@ export const loginUser = (formData, rememberMe) => async (dispatch) => {
 
 export const logoutUser = () => (dispatch) => {
   localStorage.removeItem("token");
+  sessionStorage.removeItem("token");
   delete axiosInstance.defaults.headers.common["Authorization"];
   dispatch(setUser({}));
 
-  console.log("✅ Çıkış yapıldı, kullanıcı silindi.");
 };
 
 export const verifyUser = () => async (dispatch) => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token") || sessionStorage.getItem("token");
   if (!token) {
     return;
   }
@@ -62,15 +64,19 @@ export const verifyUser = () => async (dispatch) => {
     const response = await axiosInstance.get("/verify");
 
     const newToken = response.data.token;
-    localStorage.setItem("token", newToken);
+    if (localStorage.getItem("token")) {
+      localStorage.setItem("token", newToken);
+    } else {
+      sessionStorage.setItem("token", newToken);
+    }
     axiosInstance.defaults.headers.common["Authorization"] = newToken;
 
     dispatch(setUser(response.data));
 
-    console.log("Auto-login başarılı, Backend'den Gelen Veri:", response.data);
   } catch (error) {
     console.error("Auto-login hatası", error);
     localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
 
     delete axiosInstance.defaults.headers.common["Authorization"];
     dispatch(setUser({}));
@@ -165,5 +171,14 @@ export const createOrder = (orderData) => async (dispatch) => {
   } catch (error) {
     console.error("Sipariş oluşturulamadı:", error.response?.data);
     throw error;
+  }
+};
+
+export const fetchOrders = () => async (dispatch) => {
+  try {
+    const response = await axiosInstance.get("/order");
+    dispatch({ type: "SET_ORDER_LIST", payload: response.data });
+  } catch (error) {
+    console.error("Unable to load previous orders:", error.response?.data || error);
   }
 };

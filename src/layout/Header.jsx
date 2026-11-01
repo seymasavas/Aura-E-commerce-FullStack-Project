@@ -10,8 +10,10 @@ import {
   ShoppingCart,
   Twitter,
   UserIcon,
+  Package,
+  LogOut,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { logoutUser } from "../store/actions/clientActions";
@@ -22,9 +24,13 @@ function Header({ isShopPage = false }) {
   const user = useSelector((state) => state.client.user);
   const isUserLoggedIn = user && user.email;
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
   const handleLogout = () => {
     dispatch(logoutUser());
+    navigate("/login");
   };
 
   const gravatarHash = isUserLoggedIn
@@ -47,7 +53,7 @@ function Header({ isShopPage = false }) {
   const totalItemCount = cart.reduce((total, item) => total + item.count, 0);
 
   return (
-    <header className="w-full bg-white">
+    <header className="w-full bg-white font-['Montserrat']">
       <div className="hidden lg:flex h-[58px] bg-[#252B42] font-sans items-center justify-between px-[30px]">
         <div className="w-full flex justify-between items-center">
           <div className="flex gap-[20px]">
@@ -184,10 +190,10 @@ function Header({ isShopPage = false }) {
             <div className="flex items-center">
               <div className="hidden lg:flex items-center gap-[30px] text-[#23A6F0] font-sans font-[700] text-sm">
                 {isUserLoggedIn ? (
-                  <div className="flex items-center gap-4">
-                    <Link
-                      to="/"
-                      className="flex items-center gap-[5px] hover:text-blue-600"
+                  <div className="relative">
+                    <button
+                      onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                      className="flex items-center gap-2 hover:text-blue-600 focus:outline-none"
                     >
                       <img
                         src={gravatarUrl}
@@ -195,13 +201,31 @@ function Header({ isShopPage = false }) {
                         className="w-[30px] h-[30px] rounded-full border border-gray-300"
                       />
                       <span>Hoşgeldin, {user?.name}</span>
-                    </Link>
-                    <button
-                      onClick={handleLogout}
-                      className="bg-red-500 text-white px-3 py-1 rounded text-xs hover:bg-red-600 transition-colors"
-                    >
-                      Log out
+                      <ChevronDown size={14} />
                     </button>
+
+                    {/* Kullanıcı Dropdown Menüsü */}
+                    {userDropdownOpen && (
+                      <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-1 z-50">
+                        <Link
+                          to="/previous-orders"
+                          onClick={() => setUserDropdownOpen(false)}
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-medium"
+                        >
+                          <Package size={16} className="text-[#E77C40]" />{" "}
+                          Geçmiş Siparişlerim
+                        </Link>
+                        <button
+                          onClick={() => {
+                            setUserDropdownOpen(false);
+                            handleLogout();
+                          }}
+                          className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-100 text-left font-medium"
+                        >
+                          <LogOut size={16} /> Çıkış Yap
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <Link
@@ -270,11 +294,18 @@ function Header({ isShopPage = false }) {
                       <div className="flex gap-2 mt-4 pt-4 border-t border-[#ECECEC]">
                         <Link
                           to="/cart"
+                          onClick={() => setIsCartOpen(false)}
                           className="flex-1 py-2 text-center bg-white text-[#252B42] border border-[#E8E8E8] font-bold text-[12px] rounded hover:bg-gray-50 transition-colors"
                         >
                           Sepete Git
                         </Link>
-                        <button className="flex-1 py-2 bg-[#E77C40] text-white font-bold text-[12px] rounded hover:bg-[#d46d36] transition-colors">
+                        <button
+                          onClick={() => {
+                            setIsCartOpen(false);
+                            navigate("/order");
+                          }}
+                          className="flex-1 py-2 bg-[#E77C40] text-white font-bold text-[12px] rounded hover:bg-[#d46d36] transition-colors"
+                        >
                           Siparişi Tamamla
                         </button>
                       </div>

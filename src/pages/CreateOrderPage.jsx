@@ -25,16 +25,13 @@ export default function CreateOrderPage() {
   const cardList = useSelector((state) => state.client.cardList) || [];
   const cartItems = useSelector((state) => state.shoppingCart?.cart) || [];
 
-  // Sekme yönetimi: 1 -> Adres, 2 -> Ödeme
   const [activeStep, setActiveStep] = useState(1);
 
-  // Adres state'leri
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
   const [selectedShippingAddress, setSelectedShippingAddress] = useState(null);
   const [sameAsShipping, setSameAsShipping] = useState(true);
 
-  // Kart state'leri
   const [showCardForm, setShowCardForm] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
   const [is3DSecure, setIs3DSecure] = useState(false);
@@ -51,7 +48,6 @@ export default function CreateOrderPage() {
     reset: resetCard,
   } = useForm();
 
-  // Dinamik Fiyat Hesaplamaları
   const productsSubtotal = cartItems
     .filter((item) => item.checked)
     .reduce((total, item) => total + item.product.price * item.count, 0);
@@ -74,7 +70,6 @@ export default function CreateOrderPage() {
     }
   }, [addressList, cardList]);
 
-  // Adres Form İşlemleri
   const onSubmitAddress = async (data) => {
     try {
       if (editingAddress) {
@@ -98,7 +93,6 @@ export default function CreateOrderPage() {
     }
   };
 
-  // Kart Form İşlemleri
   const onSubmitCard = async (data) => {
     try {
       const cardPayload = {
@@ -123,28 +117,40 @@ export default function CreateOrderPage() {
     }
   };
 
-  // Siparişi Tamamlama (Ödeme Yap) İşlemi
   const handleCompleteOrder = async () => {
-    try {
-      const activeCard =
-        cardList.find((c) => c.id === selectedCard) || cardList[0];
+    const selectedItems = cartItems.filter((item) => item.checked);
+    if (selectedItems.length === 0) {
+      toast.error("Select at least one item to order.");
+      return;
+    }
+    if (!selectedShippingAddress) {
+      toast.error("Select a shipping address.");
+      setActiveStep(1);
+      return;
+    }
 
+    const activeCard = cardList.find((card) => card.id === selectedCard);
+    if (!activeCard) {
+      toast.error("Add and select a payment card.");
+      setShowCardForm(true);
+      return;
+    }
+
+    try {
       const orderPayload = {
         address_id: selectedShippingAddress,
         order_date: new Date().toISOString().slice(0, 19),
-        card_no: Number(activeCard?.card_no || 1234123412341234),
-        card_name: activeCard?.name_on_card || "Ali Baş",
-        card_expire_month: Number(activeCard?.expire_month || 12),
-        card_expire_year: Number(activeCard?.expire_year || 2025),
+        card_no: Number(activeCard.card_no),
+        card_name: activeCard.name_on_card,
+        card_expire_month: Number(activeCard.expire_month),
+        card_expire_year: Number(activeCard.expire_year),
         card_ccv: 321,
-        price: grandTotal, // Dinamik sepet toplam tutarı
-        products: cartItems
-          .filter((item) => item.checked)
-          .map((item) => ({
-            product_id: item.product.id,
-            count: item.count,
-            detail: "Standart",
-          })),
+        price: grandTotal,
+        products: selectedItems.map((item) => ({
+          product_id: item.product.id,
+          count: item.count,
+          detail: "Standart",
+        })),
       };
 
       await dispatch(createOrder(orderPayload));
@@ -160,7 +166,6 @@ export default function CreateOrderPage() {
       <Header />
 
       <main className="flex-grow container mx-auto px-4 py-8 max-w-[1200px]">
-        {/* Üst Sekmeler */}
         <div className="flex border-b border-[#ECECEC] mb-8 bg-white rounded-t-lg shadow-sm cursor-pointer">
           <div
             onClick={() => setActiveStep(1)}
@@ -201,7 +206,6 @@ export default function CreateOrderPage() {
           {/* SOL TARAF: Adres veya Ödeme İçeriği */}
           <div className="w-full lg:w-3/4 flex flex-col gap-6">
             {activeStep === 1 ? (
-              // --- 1. ADIM: ADRES YÖNETİMİ ---
               <div className="flex flex-col gap-6">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xl font-bold text-[#252B42]">
@@ -344,7 +348,6 @@ export default function CreateOrderPage() {
                 </div>
               </div>
             ) : (
-              // --- 2. ADIM: ÖDEME SEÇENEKLERİ (KART YÖNETİMİ) ---
               <div className="flex flex-col gap-6 bg-white p-6 rounded-lg border border-[#ECECEC] shadow-sm font-['Montserrat']">
                 <div className="flex justify-between items-center border-b pb-4">
                   <h3 className="text-xl font-bold text-[#252B42]">
