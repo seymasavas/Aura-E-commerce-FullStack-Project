@@ -15,6 +15,8 @@ import "react-toastify/dist/ReactToastify.css";
 import Login from "/src/pages/Login.jsx";
 import { verifyUser } from "./store/actions/clientActions";
 import { fetchCategories } from "./store/actions/productActions";
+import CreateOrderPage from "./pages/CreateOrderPage.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 function App() {
   const dispatch = useDispatch();
@@ -45,6 +47,14 @@ function App() {
           <Route
             path="/shop/:gender/:categoryName/:categoryId"
             element={<ShopPage />}
+          />
+          <Route
+            path="/order"
+            element={
+              <ProtectedRoute>
+                <CreateOrderPage />
+              </ProtectedRoute>
+            }
           />
           <Route path="/team" element={<Team />} />
           <Route path="/signup" element={<SignUp />} />

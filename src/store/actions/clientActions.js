@@ -74,3 +74,42 @@ export const verifyUser = () => async (dispatch) => {
     dispatch(setUser({}));
   }
 };
+
+export const fetchAddresses = () => async (dispatch) => {
+  try {
+    const response = await axiosInstance.get("/user/address");
+    dispatch({ type: "SET_ADDRESS_LIST", payload: response.data });
+  } catch (error) {
+    console.error("Adresler yüklenemedi:", error);
+  }
+};
+
+export const addAddress = (addressData) => async (dispatch) => {
+  try {
+    await axiosInstance.post("/user/address", addressData);
+    dispatch(fetchAddresses());
+  } catch (error) {
+    console.error("Adres eklenemedi:", error.response?.data);
+    throw error;
+  }
+};
+
+export const updateAddress = (addressData) => async (dispatch) => {
+  try {
+    await axiosInstance.put("/user/address", addressData);
+    dispatch(fetchAddresses());
+  } catch (error) {
+    console.error("Adres güncellenemedi:", error.response?.data);
+    throw error;
+  }
+};
+
+export const deleteAddress = (addressId) => async (dispatch) => {
+  try {
+    await axiosInstance.delete(`/user/address/${addressId}`);
+    dispatch(fetchAddresses());
+  } catch (error) {
+    console.error("Adres silinemedi:", error.response?.data);
+    throw error;
+  }
+};

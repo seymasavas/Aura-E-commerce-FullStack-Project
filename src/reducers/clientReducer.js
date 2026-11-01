@@ -17,6 +17,8 @@ const clientReducer = (state = initialState, action) => {
       return { ...state, theme: action.payload };
     case "SET_ROLES":
       return { ...state, roles: action.payload };
+    case "SET_ADDRESS_LIST":
+      return { ...state, addressList: action.payload };
     default:
       return state;
   }
